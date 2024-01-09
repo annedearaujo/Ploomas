@@ -1,0 +1,13 @@
+.user-key-popup {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.user-key-popup.editing {
+    transform: translateX(-100%);
+}
