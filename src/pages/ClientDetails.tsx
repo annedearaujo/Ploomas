@@ -53,8 +53,6 @@ const ClientDetails: React.FC = () => {
         fetchClientDetails();
     }, [clientId]);
 
-    console.log('Estado do cliente na aplicação:', client);
-
     return (
         <div>
             <h2>Detalhes do Cliente</h2>
