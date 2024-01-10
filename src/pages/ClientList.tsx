@@ -1,43 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { List, Button, Row } from 'antd';
+import { List, Button, Row, Pagination } from 'antd'; // Importando a Pagination do ANT
 import Cookies from 'js-cookie';
 
 const ClientList: React.FC = () => {
     const [clients, setClients] = useState([]);
     const [pageNumber, setPageNumber] = useState(1);
     const itemsPerPage = 10;
+    const totalClients = 50; // Defina o número total de clientes aqui
 
-    const goToPreviousPage = () => {
-        if (pageNumber > 1) {
-            setPageNumber((prev) => prev - 1);
+    const fetchClients = async () => {
+        try {
+            const response = await fetch(`https://public-api2.ploomes.com/Contacts?$top=${itemsPerPage}&$skip=${(pageNumber - 1) * itemsPerPage}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User-Key': Cookies.get('user-key') || '',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setClients(data.value);
+            } else {
+                console.error('Erro ao buscar lista de clientes');
+            }
+        } catch (error) {
+            console.error('Erro na requisição à API:', error);
         }
-    }
+    };
 
     useEffect(() => {
-        const fetchClients = async () => {
-            try {
-                const response = await fetch(`https://public-api2.ploomes.com/Contacts?$top=${itemsPerPage}&$skip=${(pageNumber - 1) * itemsPerPage}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'User-Key': Cookies.get('user-key') || '',
-                    },
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setClients(data.value);
-                } else {
-                    console.error('Erro ao buscar lista de clientes');
-                }
-            } catch (error) {
-                console.error('Erro na requisição à API:', error);
-            }
-        };
-
         fetchClients();
     }, [pageNumber]);
+
+    const handlePageChange = (page: number) => {
+        setPageNumber(page);
+    };
 
     return (
         <div>
@@ -56,8 +55,13 @@ const ClientList: React.FC = () => {
                 )}
             />
             <Row justify="center">
-                <Button onClick={goToPreviousPage}>Página Anterior</Button>
-                <Button onClick={() => setPageNumber((prev) => prev + 1)}>Próxima Página</Button>
+                <Pagination
+                    current={pageNumber}
+                    pageSize={itemsPerPage}
+                    total={totalClients}
+                    onChange={handlePageChange}
+                    showSizeChanger={false} // Defina como true se quiser permitir que o usuário escolha a quantidade de itens por página
+                />
             </Row>
         </div>
     );
