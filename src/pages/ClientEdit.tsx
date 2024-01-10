@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Form, Input, Button } from 'antd';
+import Cookies from 'js-cookie';
 
 // Interface para tipagem do cliente
 interface Client {
@@ -8,13 +9,13 @@ interface Client {
     Name: string;
     Email: string;
     Phones: { Id: number; PhoneNumber: string; Type: { Id: number; Name: string } }[];
-    // Adicione mais campos conforme necessário
+    // Adicionar mais campos conforme necessário
 }
 
 const ClientEdit: React.FC = () => {
     const { clientId } = useParams();
     const navigate = useNavigate();
-    const [client, setClient] = useState<Client | null>(null); // Estado para armazenar os detalhes do cliente
+    const [client, setClient] = useState<Client | null>(null);
 
     useEffect(() => {
         const fetchClientDetails = async () => {
@@ -23,7 +24,7 @@ const ClientEdit: React.FC = () => {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'User-Key': 'sua-chave-de-usuario-aqui', // Substitua pela sua chave de usuário
+                        'User-Key': Cookies.get('user-key') || '',
                     },
                 });
 
@@ -44,23 +45,22 @@ const ClientEdit: React.FC = () => {
 
     const handleFormSubmit = async (values: any) => {
         try {
-            // Lógica para enviar os dados atualizados do cliente para a API usando a User-Key e clientId
-            // Atualize o corpo da requisição conforme necessário para refletir a estrutura correta
             const response = await fetch(`https://public-api2.ploomes.com/Contacts(${clientId})`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'User-Key': 'sua-chave-de-usuario-aqui', // Substitua pela sua chave de usuário
+                    'User-Key': Cookies.get('user-key') || '',
                 },
                 body: JSON.stringify({
-                    // Atualize com os campos corretos
                     Name: values.Name,
                     Email: values.Email,
-                    Phones: values.Phones, // Certifique-se de que a estrutura está correta
+                    Phones: values.Phones,
+                    // Adicione mais campos conforme necessário
                 }),
             });
 
             if (response.ok) {
+                // Redirecionar para a página de detalhes do cliente após a edição
                 navigate(`/clients/${clientId}`);
             } else {
                 console.error('Erro ao atualizar os dados do cliente');
@@ -68,6 +68,11 @@ const ClientEdit: React.FC = () => {
         } catch (error) {
             console.error('Erro na requisição à API:', error);
         }
+    };
+
+    const handleCancel = () => {
+        // Redirecionar de volta para a página de detalhes do cliente sem salvar as alterações
+        navigate(`/clients/${clientId}`);
     };
 
     return (
@@ -116,6 +121,9 @@ const ClientEdit: React.FC = () => {
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
                             Salvar Alterações
+                        </Button>
+                        <Button type="default" onClick={handleCancel} style={{ marginLeft: '8px' }} danger>
+                            Cancelar
                         </Button>
                     </Form.Item>
                 </Form>
