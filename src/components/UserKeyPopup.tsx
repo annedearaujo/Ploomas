@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
 import Cookies from 'js-cookie';
+import { Button, Input } from 'antd';
 import '../styles/UserKeyPopup.css';
+import { createGlobalStyle } from 'styled-components';
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    // Adicionar mais estilos conforme necessário
+  }
+`;
 
 const UserKeyPopup: React.FC = () => {
     const [editing, setEditing] = useState(false);
     const [userKey, setUserKey] = useState<string>(Cookies.get('user-key') || '');
+    /* const { userKey, login, logout } = useAuth(); // usar se necessário */
 
     const handleEditClick = () => {
         setEditing(true);
@@ -23,15 +32,16 @@ const UserKeyPopup: React.FC = () => {
         <div className={`user-key-popup ${editing ? 'editing' : ''}`}>
             {editing ? (
                 <div>
-                    <input type="text" value={userKey} onChange={(e) => setUserKey(e.target.value)} />
-                    <button onClick={handleSaveClick}>Salvar</button>
+                    <Input value={userKey} onChange={(e) => setUserKey(e.target.value)} />
+                    <Button type="primary" onClick={handleSaveClick}>Salvar</Button>
                 </div>
             ) : (
                 <div>
                     <span>User-Key: {truncatedUserKey}... </span>
-                    <button onClick={handleEditClick}>Editar</button>
+                    <Button onClick={handleEditClick}>Editar</Button>
                 </div>
             )}
+            <GlobalStyle />
         </div>
     );
 };

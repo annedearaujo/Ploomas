@@ -11,15 +11,22 @@ const Summary: React.FC = () => {
         <div>
             {/* Resumo da aplicação */}
             <div>
-                <h2>Ploomas</h2>
-                <p> Por aqui, você pode gerenciar os clientes Ploomas do Ploomes de forma eficiente. Aqui estão alguns recursos que você pode explorar:
+                <h2>Ploomas - Gerenciamento de Clientes</h2>
+                <p>
+                    Bem-vindo ao Ploomas, sua plataforma eficiente para gerenciar clientes utilizando a API pública do Ploomes.
+                    Explore as seguintes funcionalidades:
                 </p>
                 <ul>
-                    <li>Listagem</li>
-                    <li>Edição</li>
-                    <li>Criação</li>
-                    <li>Deleção</li>
-                    <li>Busca por Nome, E-mail ou Telefone</li>
+                    <li><Link to="/clients">Listagem</Link></li>
+                    <li><Link to="/clients/create">Criação</Link></li>
+                    <li><Link to="/clients/search">Busca</Link></li>
+                </ul>
+
+                <p>Além disso, você pode:</p>
+                <ul>
+                    <li>Visualizar, Editar e Deletar clientes</li>
+                    <li>Ativar o modo escuro</li>
+                    <li>Selecionar o responsável pelo cliente</li>
                 </ul>
 
                 <p>
@@ -28,8 +35,8 @@ const Summary: React.FC = () => {
                 <p>User-Key atual: {userKey}</p>
                 <p>Atalhos:</p>
                 <ul>
-                    <li><Link to="/authentication">Clique aqui para alterar ou adicionar a uk</Link></li>
-                    {/* Adicionar outros atalhos */}
+                    <li><Link to="/authentication">Alterar ou adicionar a User-Key</Link></li>
+                    {/* Adicionar outros atalhos conforme necessário */}
                 </ul>
             </div>
         </div>

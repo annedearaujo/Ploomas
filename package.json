@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/compatible": "^5.1.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -12,12 +13,13 @@
     "@types/react-dom": "^18.2.18",
     "antd": "^5.12.8",
     "js-cookie": "^3.0.5",
+    "less": "^4.2.0",
+    "less-loader": "^11.1.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
     "styled-components": "^6.1.8",
-    "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -45,6 +47,9 @@
     ]
   },
   "devDependencies": {
-    "@types/js-cookie": "^3.0.6"
+    "@types/customize-cra": "^1.0.8",
+    "@types/js-cookie": "^3.0.6",
+    "react-app-rewired": "^2.2.1",
+    "typescript": "^3.9.10"
   }
 }
