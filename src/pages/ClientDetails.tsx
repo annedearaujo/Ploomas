@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Descriptions, Button } from 'antd';
 import Cookies from 'js-cookie';
 
@@ -25,6 +25,7 @@ interface Client {
 const ClientDetails: React.FC = () => {
     const { clientId } = useParams();
     const [client, setClient] = useState<Client | null>(null); // Estado para armazenar os detalhes do cliente
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchClientDetails = async () => {
@@ -53,6 +54,11 @@ const ClientDetails: React.FC = () => {
         fetchClientDetails();
     }, [clientId]);
 
+    const handleCancel = () => {
+        // Redirecionar de volta para a página de clientes
+        navigate(`/clients/`);
+    };
+
     return (
         <div>
             <h2>Detalhes do Cliente</h2>
@@ -74,6 +80,9 @@ const ClientDetails: React.FC = () => {
                     <Link to={`/clients/${clientId}/edit`}>
                         <Button type="primary">Editar Cliente</Button>
                     </Link>
+                    <Button type="default" onClick={handleCancel} style={{ marginLeft: '8px' }}>
+                            Voltar
+                        </Button>
                 </div>
             )}
         </div>

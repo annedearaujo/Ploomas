@@ -1,14 +1,41 @@
 import React from 'react';
 import { Form, Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const ClientCreate: React.FC = () => {
     const navigate = useNavigate();
 
-    const handleFormSubmit = (values: any) => {
-        // Lógica para enviar os dados do novo cliente para a API usando a User-Key
-        // Após a conclusão, redirecione para a página de listagem de clientes
-        navigate('/clients');
+    const handleFormSubmit = async (values: any) => {
+        try {
+            const response = await fetch('https://public-api2.ploomes.com/Contacts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User-Key': Cookies.get('user-key') || '',
+                },
+                body: JSON.stringify({
+                    Name: values.name,
+                    Email: values.email,
+                    Phones: values.phone ? [{ PhoneNumber: values.phone, Type: { Id: 1, Name: 'Default' } }] : [],
+                    // Adicione mais campos conforme necessário
+                }),
+            });
+
+            if (response.ok) {
+                // Lógica para tratamento de sucesso
+                navigate('/clients');
+            } else {
+                console.error('Erro ao criar novo cliente');
+            }
+        } catch (error) {
+            console.error('Erro na requisição à API:', error);
+        }
+    };
+
+    const handleCancel = () => {
+        // Redirecionar de volta para a página de clientes
+        navigate(`/clients/`);
     };
 
     return (
@@ -28,6 +55,9 @@ const ClientCreate: React.FC = () => {
                 <Form.Item>
                     <Button type="primary" htmlType="submit">
                         Criar Cliente
+                    </Button>
+                    <Button type="default" onClick={handleCancel} style={{ marginLeft: '8px' }} danger>
+                        Cancelar
                     </Button>
                 </Form.Item>
             </Form>

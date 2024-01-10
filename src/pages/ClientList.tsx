@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { List, Button, Row, Pagination, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Cookies from 'js-cookie';
+import ClientDelete from '../components/ClientDelete';
 
 const ClientList: React.FC = () => {
     const [clients, setClients] = useState([]);
@@ -41,7 +42,7 @@ const ClientList: React.FC = () => {
 
     useEffect(() => {
         fetchClients();
-    }, [pageNumber, searchTerm]);
+    }, [pageNumber, searchTerm, isSearchVisible]); //isSearchVisible é uma dependência no array de dependências do useEffect para que o efeito seja executado quando o estado isSearchVisible for alterado. 
 
     const handlePageChange = (page: number) => {
         setPageNumber(page);
@@ -87,6 +88,7 @@ const ClientList: React.FC = () => {
                 renderItem={(client: any) => (
                     <List.Item>
                         <Link to={`/clients/${client.Id}`}>{client.Name}</Link>
+                        <ClientDelete clientId={client.Id} onDelete={fetchClients} />
                     </List.Item>
                 )}
             />
