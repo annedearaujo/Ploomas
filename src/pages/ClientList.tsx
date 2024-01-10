@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { List, Button, Row, Pagination } from 'antd'; // Importando a Pagination do ANT
+import { List, Button, Row, Pagination, Input } from 'antd';
 import Cookies from 'js-cookie';
 
 const ClientList: React.FC = () => {
     const [clients, setClients] = useState([]);
     const [pageNumber, setPageNumber] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
     const itemsPerPage = 10;
     const totalClients = 50; // Defina o número total de clientes aqui
 
     const fetchClients = async () => {
         try {
-            const response = await fetch(`https://public-api2.ploomes.com/Contacts?$top=${itemsPerPage}&$skip=${(pageNumber - 1) * itemsPerPage}`, {
+            let apiUrl = `https://public-api2.ploomes.com/Contacts?$top=${itemsPerPage}&$skip=${(pageNumber - 1) * itemsPerPage}`;
+
+            if (searchTerm) {
+                apiUrl = `https://public-api2.ploomes.com/Contacts?$filter=contains(Name, '${searchTerm}')`;
+            }
+
+            const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,10 +39,19 @@ const ClientList: React.FC = () => {
 
     useEffect(() => {
         fetchClients();
-    }, [pageNumber]);
+    }, [pageNumber, searchTerm]);
 
     const handlePageChange = (page: number) => {
         setPageNumber(page);
+    };
+
+    const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const handleSearch = () => {
+        setPageNumber(1); // Resetar a página ao iniciar uma nova busca
+        fetchClients();
     };
 
     return (
@@ -45,6 +61,15 @@ const ClientList: React.FC = () => {
                 <Link to="/clients/create">
                     <Button type="primary">Adicionar cliente</Button>
                 </Link>
+                <Input
+                    placeholder="Digite o nome do cliente"
+                    value={searchTerm}
+                    onChange={handleSearchTermChange}
+                    style={{ marginRight: '8px' }}
+                />
+                <Button type="primary" onClick={handleSearch}>
+                    Buscar
+                </Button>
             </Row>
             <List
                 dataSource={clients}
@@ -60,7 +85,7 @@ const ClientList: React.FC = () => {
                     pageSize={itemsPerPage}
                     total={totalClients}
                     onChange={handlePageChange}
-                    showSizeChanger={false} // Defina como true se quiser permitir que o usuário escolha a quantidade de itens por página
+                    showSizeChanger={false}
                 />
             </Row>
         </div>

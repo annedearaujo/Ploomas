@@ -1,39 +1,48 @@
 import React, { useState } from 'react';
 import { Input, Button, List } from 'antd';
 import { Link } from 'react-router-dom';
-
-// Interface para tipagem do cliente
-interface Client {
-    Id: number;
-    Name: string;
-    Email: string;
-    Phone: string;
-    // Adicionar mais campos
-}
+import Cookies from 'js-cookie';
 
 const ClientSearch: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState<Client[]>([]);
+    const [searchResults, setSearchResults] = useState([]);
 
-    const handleSearch = () => {
-        // Lógica para buscar clientes da API com base no searchTerm usando a User-Key
-        // Atualize o estado 'searchResults' com os dados recuperados
+    const handleSearch = async () => {
+        try {
+            const response = await fetch(`https://public-api2.ploomes.com/Contacts?$filter=contains(Name, '${searchTerm}')`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User-Key': Cookies.get('user-key') || '',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setSearchResults(data.value);
+            } else {
+                console.error('Erro ao buscar clientes');
+            }
+        } catch (error) {
+            console.error('Erro na requisição à API:', error);
+        }
     };
 
     return (
         <div>
-            <h2>Pesquisar Clientes</h2>
+            <h2>Buscar Clientes</h2>
             <Input
-                placeholder="Digite o nome, e-mail ou telefone"
+                placeholder="Digite o nome do cliente"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ marginRight: '8px' }}
             />
             <Button type="primary" onClick={handleSearch}>
-                Pesquisar
+                Buscar
             </Button>
             <List
                 dataSource={searchResults}
-                renderItem={(client: Client) => (
+                renderItem={(client: any) => (
                     <List.Item>
                         <Link to={`/clients/${client.Id}`}>{client.Name}</Link>
                     </List.Item>
