@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { Button, Input } from 'antd';
+import { Button, Input, message } from 'antd';
 
 const AuthenticationPage: React.FC = () => {
     const [userKey, setUserKey] = useState<string>(''); // Estado para armazenar a user-key
@@ -23,18 +23,17 @@ const AuthenticationPage: React.FC = () => {
                     });
 
                     if (response.ok) {
-                        // Se a autenticação for bem-sucedida, pode redirecionar ou realizar outras ações necessárias
-                        // ...
-
+                        // Se a autenticação for bem-sucedida, ...
                         // Atualize o estado de carregamento para indicar que a verificação foi concluída
                         setLoading(false);
                     } else {
+                        message.error('Falha na autenticação. Por favor, insira uma User Key válida.');
                         // Se a autenticação falhar, mantenha a tela de autenticação
                         setLoading(false);
                     }
                 } catch (error) {
                     console.error('Erro ao conectar com a API do Ploomes:', error);
-                    // Lógica de tratamento de erro aqui
+                    message.error('Erro ao conectar com a API do Ploomes. Tente novamente mais tarde.');
                     setLoading(false);
                 }
             } else {
@@ -51,14 +50,16 @@ const AuthenticationPage: React.FC = () => {
     };
 
     const handleSaveUserKey = () => {
+        if (userKey.trim() === '') {
+            message.warning('Por favor, insira uma User Key para prosseguir.');
+            return;
+        }
+
         // Salvar a user-key nos cookies
         Cookies.set('user-key', userKey, { expires: 1 }); // Cookie válido por 1 dia
-
-        // Redirecione ou realize outras ações necessárias
-        // ...
-
         // Indique que a verificação foi concluída
         setLoading(false);
+        message.success('User Key salva com sucesso!');
     };
 
     // Renderize a tela de carregamento enquanto a autenticação estiver sendo verificada

@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { List, Button } from 'antd';
+import { List, Button, Row } from 'antd';
 import Cookies from 'js-cookie';
 
 const ClientList: React.FC = () => {
-    const [clients, setClients] = useState([]); // Estado para armazenar a lista de clientes
+    const [clients, setClients] = useState([]);
     const [pageNumber, setPageNumber] = useState(1);
-    const itemsPerPage = 10; // Defina o número desejado de itens por página
+    const itemsPerPage = 10;
+
+    const goToPreviousPage = () => {
+        if (pageNumber > 1) {
+            setPageNumber((prev) => prev - 1);
+        }
+    }
 
     useEffect(() => {
         const fetchClients = async () => {
@@ -15,13 +21,13 @@ const ClientList: React.FC = () => {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'User-Key': Cookies.get('user-key') || '', // Certifique-se de importar Cookies do 'js-cookie'
+                        'User-Key': Cookies.get('user-key') || '',
                     },
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    setClients(data.value); // Atualiza o estado com os dados dos clientes
+                    setClients(data.value);
                 } else {
                     console.error('Erro ao buscar lista de clientes');
                 }
@@ -31,11 +37,16 @@ const ClientList: React.FC = () => {
         };
 
         fetchClients();
-    }, [pageNumber]); // Dependência do useEffect para reexecutar quando a página muda
+    }, [pageNumber]);
 
     return (
         <div>
-            <h2>Lista de Clientes</h2>
+            <Row justify="space-between" align="middle">
+                <h2>Lista de Clientes</h2>
+                <Link to="/clients/create">
+                    <Button type="primary">Adicionar cliente</Button>
+                </Link>
+            </Row>
             <List
                 dataSource={clients}
                 renderItem={(client: any) => (
@@ -44,10 +55,10 @@ const ClientList: React.FC = () => {
                     </List.Item>
                 )}
             />
-            <Link to="/clients/create">
-                <Button type="primary">Adicionar cliente</Button>
-            </Link>
-            <Button onClick={() => setPageNumber((prev) => prev + 1)}>Próxima página</Button>
+            <Row justify="center">
+                <Button onClick={goToPreviousPage}>Página Anterior</Button>
+                <Button onClick={() => setPageNumber((prev) => prev + 1)}>Próxima Página</Button>
+            </Row>
         </div>
     );
 };
