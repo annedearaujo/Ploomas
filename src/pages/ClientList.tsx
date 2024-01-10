@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { List, Button, Row, Pagination, Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import Cookies from 'js-cookie';
 
 const ClientList: React.FC = () => {
     const [clients, setClients] = useState([]);
     const [pageNumber, setPageNumber] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isSearchVisible, setIsSearchVisible] = useState(false);
     const itemsPerPage = 10;
     const totalClients = 50; // Defina o número total de clientes aqui
 
@@ -54,6 +56,11 @@ const ClientList: React.FC = () => {
         fetchClients();
     };
 
+    const toggleSearchVisibility = () => {
+        setIsSearchVisible(!isSearchVisible);
+        setSearchTerm(''); // Limpar o termo de busca ao fechar o campo de pesquisa
+    };
+
     return (
         <div>
             <Row justify="space-between" align="middle">
@@ -61,15 +68,19 @@ const ClientList: React.FC = () => {
                 <Link to="/clients/create">
                     <Button type="primary">Adicionar cliente</Button>
                 </Link>
-                <Input
-                    placeholder="Digite o nome do cliente"
-                    value={searchTerm}
-                    onChange={handleSearchTermChange}
-                    style={{ marginRight: '8px' }}
+                {isSearchVisible ? (
+                    <Input
+                        placeholder="Digite o nome do cliente"
+                        value={searchTerm}
+                        onChange={handleSearchTermChange}
+                        style={{ width: 200, marginRight: '8px' }}
+                    />
+                ) : null}
+                <Button
+                    type="primary"
+                    icon={<SearchOutlined />}
+                    onClick={toggleSearchVisibility}
                 />
-                <Button type="primary" onClick={handleSearch}>
-                    Buscar
-                </Button>
             </Row>
             <List
                 dataSource={clients}
