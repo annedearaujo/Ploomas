@@ -9,8 +9,10 @@ import ClientDetails from './pages/ClientDetails';
 import ClientEdit from './pages/ClientEdit';
 import ClientCreate from './pages/ClientCreate';
 import 'antd/dist/reset.css';
+import './theme.less';
+import './App.less';
 import { notification, ConfigProvider, theme, Button, Card, Switch } from 'antd';
-import './styles/styles.css';
+// import './styles/styles.css';
 import { BulbOutlined } from '@ant-design/icons';
 // import { Switch } from "antd";
 

@@ -13,6 +13,7 @@
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
     "antd": "^5.12.8",
+    "craco-less": "^3.0.1",
     "js-cookie": "^3.0.5",
     "less": "^4.2.0",
     "less-loader": "^11.1.4",
