@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { Button, Input, message } from 'antd';
+import '../styles/styles.css';
 
 const AuthenticationPage: React.FC = () => {
     const [userKey, setUserKey] = useState<string>(''); // Estado para armazenar a user-key

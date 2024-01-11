@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Row, Col, Space } from 'antd';
+import { Form, Input, Button, Row, Col, Space, Modal, Card, } from 'antd';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import Cookies from 'js-cookie';
 import ClientDelete from '../components/ClientDelete';
+
+const { Meta } = Card;
+
+interface ClientEditProps {
+    children: React.ReactNode;
+}
 
 // Interface para tipagem do cliente
 interface Client {
@@ -14,20 +20,10 @@ interface Client {
     // Adicionar mais campos conforme necessário
 }
 
-const ClientEdit: React.FC = () => {
+const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
     const { clientId } = useParams();
     const navigate = useNavigate();
     const [client, setClient] = useState<Client | null>(null);
-
-    const EmailInput: React.FC = () => (
-        <Space>
-            <Input placeholder="Username" style={{ width: 150 }} />
-            <span>@</span>
-            <Input placeholder="Domain" style={{ width: 150 }} />
-            <span>.</span>
-            <Input placeholder="TLD" style={{ width: 80 }} />
-        </Space>
-    );
 
     useEffect(() => {
         const fetchClientDetails = async () => {
@@ -88,88 +84,90 @@ const ClientEdit: React.FC = () => {
     };
 
     return (
-        <div>
-            <h2>Editar Cliente</h2>
-            {client && (
-                <>
-                    <Form
-                        onFinish={handleFormSubmit}
-                        initialValues={{
-                            Name: client.Name,
-                            Email: client.Email,
-                            Phones: client.Phones.map(phone => ({
-                                Id: phone.Id,
-                                PhoneNumber: phone.PhoneNumber,
-                                Type: phone.Type.Name,
-                            })),
-                            // Adicione mais campos conforme necessário
-                        }}
-                    >
-                        <Form.Item label="Nome" name="Name" rules={[{ required: true, message: 'Por favor, insira o nome' }]}>
-                            <Input />
-                        </Form.Item>
-                        <Form.Item label="Email" name="Email" rules={[{ required: true, message: 'Por favor, insira o Email' }]}>
-                            <Input />
-                        </Form.Item>
-                        <Form.List name="Phones">
-                            {(fields, { add, remove }) => (
-                                <>
-                                    {fields.map(field => (
-                                        <Row gutter={8} key={field.key}>
-                                            <Col span={10}>
-                                                <Form.Item
-                                                    {...field}
-                                                    label="Telefone"
-                                                    name={[field.name, 'PhoneNumber']}
-                                                    fieldKey={[field.fieldKey || '', 'PhoneNumber']}
-                                                >
-                                                    <Input />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={2}>
-                                                <Button
-                                                    type="dashed"
-                                                    onClick={() => add()}
-                                                    icon={<PlusOutlined />}
-                                                />
-                                            </Col>
-                                            <Col span={2}>
-                                                {fields.length > 1 && (
+        <div className="container">
+            <Card title="Editar cliente">
+                {client && (
+                    <>
+                        <Form
+                            onFinish={handleFormSubmit}
+                            initialValues={{
+                                Name: client.Name,
+                                Email: client.Email,
+                                Phones: client.Phones.map(phone => ({
+                                    Id: phone.Id,
+                                    PhoneNumber: phone.PhoneNumber,
+                                    Type: phone.Type.Name,
+                                })),
+                                // Adicione mais campos conforme necessário
+                            }}
+                        >
+                            <Form.Item label="Nome" name="Name" rules={[{ required: true, message: 'Por favor, insira o nome' }]}>
+                                <Input placeholder="Digite o nome do cliente" />
+                            </Form.Item>
+                            <Form.Item label="Email" name="Email" rules={[{ required: true, message: 'Por favor, insira o e-mail' }]}>
+                                <Input placeholder="Digite o e-mail do cliente" />
+                            </Form.Item>
+                            <Form.List name="Phones">
+                                {(fields, { add, remove }) => (
+                                    <>
+                                        {fields.map(field => (
+                                            <Row gutter={8} key={field.key}>
+                                                <Col>
+                                                    <Form.Item
+                                                        {...field}
+                                                        label="Telefone"
+                                                        name={[field.name, 'PhoneNumber']}
+                                                        fieldKey={[field.fieldKey || '', 'PhoneNumber']}
+                                                    >
+                                                        <Input placeholder="Digite o telefone do cliente" />
+                                                    </Form.Item>
+                                                </Col>
+                                                <Col>
                                                     <Button
                                                         type="dashed"
-                                                        onClick={() => remove(field.name)}
-                                                        icon={<MinusCircleOutlined />}
+                                                        onClick={() => add()}
+                                                        icon={<PlusOutlined />}
                                                     />
-                                                )}
-                                            </Col>
-                                        </Row>
-                                    ))}
-                                </>
-                            )}
-                        </Form.List>
-                        {/* Adicione mais campos conforme necessário */}
-                        <Form.Item>
-                            <Row gutter={8}>
-                                <Col span={12}>
-                                    <Button type="primary" htmlType="submit">
-                                        Salvar Alterações
-                                    </Button>
-                                </Col>
-                                <Col span={12}>
-                                    <Button type="default" onClick={handleCancel} danger>
-                                        Cancelar
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </Form.Item>
-                    </Form>
-                    <Row justify="end">
-                        <Col>
-                            <ClientDelete clientId={client.Id} onDelete={() => navigate('/clients')} />
-                        </Col>
-                    </Row>
-                </>
-            )}
+                                                </Col>
+                                                <Col>
+                                                    {fields.length > 1 && (
+                                                        <Button
+                                                            type="dashed"
+                                                            onClick={() => remove(field.name)}
+                                                            icon={<MinusCircleOutlined />}
+                                                        />
+                                                    )}
+                                                </Col>
+                                            </Row>
+                                        ))}
+                                    </>
+                                )}
+                            </Form.List>
+                            {/* Adicione mais campos conforme necessário */}
+                            <Form.Item>
+                                <Row gutter={8}>
+                                    <Col>
+                                        <Button type="default" onClick={handleCancel} danger>
+                                            Cancelar
+                                        </Button>
+                                    </Col>
+                                    <Col>
+                                        <Button type="primary" htmlType="submit">
+                                            Salvar Alterações
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Form.Item>
+                        </Form>
+                        {/* <Row justify="end">
+                            <Col>
+                                <ClientDelete clientId={client.Id} onDelete={() => navigate('/clients')} children={undefined} />
+                            </Col>
+                        </Row> */}
+                        {children}
+                    </>
+                )}
+            </Card>
         </div>
     );
 };

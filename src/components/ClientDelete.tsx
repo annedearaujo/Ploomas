@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'antd';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import Cookies from 'js-cookie';
 
 interface ClientDeleteProps {
     clientId: number;
     onDelete: () => void;
+    children: React.ReactNode;
 }
 
-const ClientDelete: React.FC<ClientDeleteProps> = ({ clientId, onDelete }) => {
-    const [isModalVisible, setIsModalVisible] = useState(false);
+const ClientDelete: React.FC<ClientDeleteProps> = ({ clientId, onDelete, children }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const showModal = () => {
-        setIsModalVisible(true);
+        setIsModalOpen(true);
     };
 
     const handleOk = async () => {
@@ -34,26 +36,43 @@ const ClientDelete: React.FC<ClientDeleteProps> = ({ clientId, onDelete }) => {
             console.error('Erro na requisição à API:', error);
         }
 
-        setIsModalVisible(false);
+        setIsModalOpen(false);
     };
 
     const handleCancel = () => {
-        setIsModalVisible(false);
+        setIsModalOpen(false);
+    };
+
+    const showDeleteConfirm = () => {
+        Modal.confirm({
+            title: 'Confirmar exclusão',
+            icon: <ExclamationCircleFilled />,
+            content: 'Tem certeza de que deseja excluir este cliente?',
+            okText: 'Sim',
+            okType: 'danger',
+            cancelText: 'Não',
+            onOk: handleOk,
+            onCancel: handleCancel,
+        });
     };
 
     return (
         <>
-            <Button type="primary" onClick={showModal} danger>
-                Excluir Cliente
+            <Button type="primary" onClick={showDeleteConfirm} danger>
+                Excluir cliente
             </Button>
-            <Modal
-                title="Confirmar Exclusão"
-                visible={isModalVisible}
+            {children}
+            {/* <Modal
+                title="Confirmar exclusão"
+                open={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}
+                okText="Sim"
+                cancelText="Não"
+                okType="danger"
             >
                 <p>Tem certeza de que deseja excluir este cliente?</p>
-            </Modal>
+            </Modal> */}
         </>
     );
 };

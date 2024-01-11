@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Descriptions, Button } from 'antd';
+import { Descriptions, Button, Modal, Card, Row, Col, Space } from 'antd';
 import Cookies from 'js-cookie';
+import ClientDelete from '../components/ClientDelete';
+
+const { Meta } = Card;
 
 // Interface para tipagem do telefone
 interface Phone {
@@ -60,31 +63,35 @@ const ClientDetails: React.FC = () => {
     };
 
     return (
-        <div>
-            <h2>Detalhes do Cliente</h2>
-            {client && (
-                <div>
-                    <Descriptions title={client.Name}>
-                        <Descriptions.Item label="Email">{client.Email}</Descriptions.Item>
-                        {client.Phones && client.Phones.length > 0 && (
-                            <Descriptions.Item label="Telefones">
-                                {client.Phones.map(phone => (
-                                    <div key={phone.Id}>
-                                        <p>{phone.Type.Name}: {phone.PhoneNumber}</p>
-                                    </div>
-                                ))}
-                            </Descriptions.Item>
-                        )}
-                        {/* Adicione mais detalhes conforme necessário */}
-                    </Descriptions>
-                    <Link to={`/clients/${clientId}/edit`}>
-                        <Button type="primary">Editar Cliente</Button>
-                    </Link>
-                    <Button type="default" onClick={handleCancel} style={{ marginLeft: '8px' }}>
+        <div className="container">
+            <Card title="Detalhes do cliente">
+                {client && (
+                    <div>
+                        <Descriptions title={client.Name}>
+                            <Descriptions.Item label="Email">{client.Email}</Descriptions.Item>
+                            {client.Phones && client.Phones.length > 0 && (
+                                <Descriptions.Item label="Telefones">
+                                    {client.Phones.map(phone => (
+                                        <div key={phone.Id}>
+                                            <p>{phone.Type.Name}: {phone.PhoneNumber}</p>
+                                        </div>
+                                    ))}
+                                </Descriptions.Item>
+                            )}
+                            {/* Adicione mais detalhes conforme necessário */}
+                        </Descriptions>
+                        <Space>
+                        <ClientDelete clientId={client.Id} onDelete={() => navigate('/clients')} children={undefined} />
+                        <Link to={`/clients/${clientId}/edit`}>
+                            <Button type="primary">Editar cliente</Button>
+                        </Link>
+                        <Button type="default" onClick={handleCancel} >
                             Voltar
                         </Button>
-                </div>
-            )}
+                        </Space>
+                    </div>
+                )}
+            </Card>
         </div>
     );
 };

@@ -9,7 +9,7 @@ const ClientSearch: React.FC = () => {
 
     const handleSearch = async () => {
         try {
-            const response = await fetch(`https://public-api2.ploomes.com/Contacts?$filter=contains(Name, '${searchTerm}')`, {
+            const response = await fetch(`https://public-api2.ploomes.com/Contacts?$filter=contains(Name, '${searchTerm}') or contains(Email, '${searchTerm}') or Phones/any(p: contains(p/PhoneNumber, '${searchTerm}'))`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -30,9 +30,9 @@ const ClientSearch: React.FC = () => {
 
     return (
         <div>
-            <h2>Buscar Clientes</h2>
+            <h2>Buscar clientes</h2>
             <Input
-                placeholder="Digite o nome do cliente"
+                placeholder="Digite o nome, email ou telefone do cliente"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ marginRight: '8px' }}

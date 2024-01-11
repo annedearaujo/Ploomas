@@ -1,7 +1,10 @@
 import React from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Modal, Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import '../styles/styles.css';
+
+const { Meta } = Card;
 
 const ClientCreate: React.FC = () => {
     const navigate = useNavigate();
@@ -39,28 +42,33 @@ const ClientCreate: React.FC = () => {
     };
 
     return (
-        <div>
-            <h2>Criar Novo Cliente</h2>
-            <Form onFinish={handleFormSubmit}>
-                <Form.Item label="Nome" name="name" rules={[{ required: true, message: 'Por favor, insira o nome' }]}>
-                    <Input />
-                </Form.Item>
-                <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Por favor, insira o email' }]}>
-                    <Input />
-                </Form.Item>
-                <Form.Item label="Telefone" name="phone">
-                    <Input />
-                </Form.Item>
-                {/* Adicione mais campos conforme necessário */}
-                <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                        Criar Cliente
-                    </Button>
-                    <Button type="default" onClick={handleCancel} style={{ marginLeft: '8px' }} danger>
-                        Cancelar
-                    </Button>
-                </Form.Item>
-            </Form>
+        <div className="container">
+            <Card title="Criar cliente">
+                <Form onFinish={handleFormSubmit}>
+                    <Form.Item label="Nome" name="name" rules={[{ required: true, message: 'Por favor, insira o nome' }]}
+                    labelCol={{ span: 4 }}>
+                        <Input placeholder="Digite o nome do cliente" />
+                    </Form.Item>
+                    <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Por favor, insira o email' }]}
+                    labelCol={{ span: 4 }}>
+                        <Input placeholder="Digite o email do cliente" />
+                    </Form.Item>
+                    <Form.Item label="Telefone" name="phone"
+                    labelCol={{ span: 4 }}>
+                        <Input placeholder="Digite o telefone do cliente" />
+                    </Form.Item>
+                    {/* Adicione mais campos conforme necessário */}
+                    <Form.Item 
+                    labelCol={{ span: 4 }}>
+                        <Button type="primary" htmlType="submit">
+                            Criar
+                        </Button>
+                        <Button type="default" onClick={handleCancel} style={{ marginLeft: '8px' }} danger>
+                            Cancelar
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Card>
         </div>
     );
 };

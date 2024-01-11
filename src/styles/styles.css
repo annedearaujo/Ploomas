@@ -1,0 +1,78 @@
+@import '~antd/dist/reset.css';
+
+
+/* Estilos padrão para telas maiores ou iguais a 600 pixels de largura */
+body {
+    font-size: 16px;
+    margin: 20px;
+    word-wrap: break-word;
+}
+
+.responsive-layout {
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 16px;
+}
+
+.header-style {
+    text-align: center;
+    color: #000000;
+    height: 64px;
+    padding-inline: 48px;
+    line-height: 64px;
+    background-color: #ffffff;
+}
+
+.content-style {
+    text-align: center;
+    min-height: 120px;
+    line-height: 120px;
+    color: #fff;
+    background-color: #0958d9;
+}
+
+.sider-style {
+    text-align: center;
+    line-height: 120px;
+    color: #fff;
+    background-color: #1677ff;
+}
+
+.footer-style {
+    text-align: center;
+    color: #fff;
+    background-color: #4096ff;
+}
+
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.app-container.dark-mode {
+    background-color: #333;
+    color: #fff;
+}
+
+.app-container.light-mode {
+    background-color: #fff;
+    color: #333;
+}
+
+/* Media query para telas menores que 600 pixels de largura */
+@media screen and (max-width: 600px) {
+    body {
+        font-size: 14px;
+        /* Reduza o tamanho da fonte para telas menores */
+    }
+
+    .container {
+        width: 100%;
+        /* Faça com que o contêiner ocupe 100% da largura da tela */
+    }
+
+    /* Adicione outros estilos específicos para telas menores conforme necessário */
+}
