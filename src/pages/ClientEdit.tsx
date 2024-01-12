@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Row, Col, Space, Modal, Card, } from 'antd';
+import { Form, Input, Button, Row, Col, Card, Tooltip, notification } from 'antd';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import Cookies from 'js-cookie';
-import ClientDelete from '../components/ClientDelete';
 
 const { Meta } = Card;
 
+// Interface para os detalhes do cliente
 interface ClientEditProps {
     children: React.ReactNode;
 }
@@ -17,7 +17,6 @@ interface Client {
     Name: string;
     Email: string;
     Phones: { Id: number; PhoneNumber: string; Type: { Id: number; Name: string } }[];
-    // Adicionar mais campos conforme necessário
 }
 
 const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
@@ -26,13 +25,14 @@ const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
     const [client, setClient] = useState<Client | null>(null);
 
     useEffect(() => {
+        // Busca os detalhes do cliente quando o componente é montado
         const fetchClientDetails = async () => {
             try {
                 const response = await fetch(`https://public-api2.ploomes.com/Contacts?$expand=Phones($expand=Type)&$filter=Id eq ${clientId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'User-Key': Cookies.get('user-key') || '',
+                        'User-Key': Cookies.get('user-key') ?? '',
                     },
                 });
 
@@ -57,7 +57,7 @@ const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'User-Key': Cookies.get('user-key') || '',
+                    'User-Key': Cookies.get('user-key') ?? '',
                 },
                 body: JSON.stringify({
                     Name: values.Name,
@@ -68,9 +68,18 @@ const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
             });
 
             if (response.ok) {
+                notification.success({
+                    message: 'Cliente editado com sucesso!',
+                    duration: 3, // Tempo em segundos que a notificação será exibida
+                });
                 // Redirecionar para a página de detalhes do cliente após a edição
                 navigate(`/clients/${clientId}`);
             } else {
+                notification.error({
+                    message: 'Erro ao editar o cliente!',
+                    description: 'Tente novamente mais tarde.',
+                    duration: 3,
+                });
                 console.error('Erro ao atualizar os dados do cliente');
             }
         } catch (error) {
@@ -98,9 +107,9 @@ const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
                                     PhoneNumber: phone.PhoneNumber,
                                     Type: phone.Type.Name,
                                 })),
-                                // Adicione mais campos conforme necessário
                             }}
                         >
+                            {/* Formulário de edição do cliente */}
                             <Form.Item label="Nome" name="Name" rules={[{ required: true, message: 'Por favor, insira o nome' }]}>
                                 <Input placeholder="Digite o nome do cliente" />
                             </Form.Item>
@@ -108,6 +117,7 @@ const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
                                 <Input placeholder="Digite o e-mail do cliente" />
                             </Form.Item>
                             <Form.List name="Phones">
+                                {/* Lista dinâmica de telefones */}
                                 {(fields, { add, remove }) => (
                                     <>
                                         {fields.map(field => (
@@ -117,25 +127,29 @@ const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
                                                         {...field}
                                                         label="Telefone"
                                                         name={[field.name, 'PhoneNumber']}
-                                                        fieldKey={[field.fieldKey || '', 'PhoneNumber']}
+                                                        fieldKey={[field.fieldKey ?? '', 'PhoneNumber']}
                                                     >
                                                         <Input placeholder="Digite o telefone do cliente" />
                                                     </Form.Item>
                                                 </Col>
                                                 <Col>
-                                                    <Button
-                                                        type="dashed"
-                                                        onClick={() => add()}
-                                                        icon={<PlusOutlined />}
-                                                    />
+                                                    <Tooltip title="Adicionar outro número de telefone">
+                                                        <Button
+                                                            type="dashed"
+                                                            onClick={() => add()}
+                                                            icon={<PlusOutlined />}
+                                                        />
+                                                    </Tooltip>
                                                 </Col>
                                                 <Col>
                                                     {fields.length > 1 && (
+                                                        <Tooltip title="Remover número de telefone">
                                                         <Button
                                                             type="dashed"
                                                             onClick={() => remove(field.name)}
                                                             icon={<MinusCircleOutlined />}
                                                         />
+                                                        </Tooltip>
                                                     )}
                                                 </Col>
                                             </Row>
@@ -143,7 +157,6 @@ const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
                                     </>
                                 )}
                             </Form.List>
-                            {/* Adicione mais campos conforme necessário */}
                             <Form.Item>
                                 <Row gutter={8}>
                                     <Col>
@@ -159,11 +172,6 @@ const ClientEdit: React.FC<ClientEditProps> = ({ children }) => {
                                 </Row>
                             </Form.Item>
                         </Form>
-                        {/* <Row justify="end">
-                            <Col>
-                                <ClientDelete clientId={client.Id} onDelete={() => navigate('/clients')} children={undefined} />
-                            </Col>
-                        </Row> */}
                         {children}
                     </>
                 )}

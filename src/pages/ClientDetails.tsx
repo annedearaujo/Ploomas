@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Descriptions, Button, Modal, Card, Row, Col, Space } from 'antd';
+import { Descriptions, Button, Card, Space } from 'antd';
 import Cookies from 'js-cookie';
 import ClientDelete from '../components/ClientDelete';
 
@@ -22,53 +22,75 @@ interface Client {
     Name: string;
     Email: string;
     Phones?: Phone[];
-    // Adicionar mais campos conforme necessário
 }
 
 const ClientDetails: React.FC = () => {
+    // Obtém o parâmetro da URL (ID do cliente)
     const { clientId } = useParams();
-    const [client, setClient] = useState<Client | null>(null); // Estado para armazenar os detalhes do cliente
+    // Estado para armazenar os detalhes do cliente
+    const [client, setClient] = useState<Client | null>(null);
+    // Hook para navegação programática
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Função assíncrona para buscar detalhes do cliente ao montar o componente
         const fetchClientDetails = async () => {
             try {
+                // Realiza uma solicitação GET para obter os detalhes do cliente
                 const response = await fetch(`https://public-api2.ploomes.com/Contacts?$filter=Id eq ${clientId}&$expand=Phones($expand=Type)`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'User-Key': Cookies.get('user-key') || '',
+                        'User-Key': Cookies.get('user-key') ?? '',
                     },
                 });
 
                 if (response.ok) {
+                    // Se a solicitação for bem-sucedida, extrai os dados do cliente
                     const data = await response.json();
                     // Como o filtro é pelo Id, espera-se um único resultado
                     const selectedClient = data.value[0];
+                    // Atualiza o estado com os detalhes do cliente
                     setClient(selectedClient);
                 } else {
+                    // Se houver um erro na busca dos detalhes do cliente, registra no console
                     console.error('Erro ao buscar detalhes do cliente');
                 }
             } catch (error) {
+                // Trata erros na requisição à API
                 console.error('Erro na requisição à API:', error);
             }
         };
 
+        // Chama a função de busca ao montar o componente (com dependência no clientId)
         fetchClientDetails();
     }, [clientId]);
 
+    // Função para lidar com o cancelamento da visualização
     const handleCancel = () => {
-        // Redirecionar de volta para a página de clientes
+        // Redireciona de volta para a página de clientes
         navigate(`/clients/`);
     };
 
     return (
         <div className="container">
+            {/* Botão de voltar redireciona para a tela de clientes */}
+            <Button type="default" onClick={handleCancel} >
+                Voltar
+            </Button>
             <Card title="Detalhes do cliente">
+                {/* Renderiza os detalhes do cliente se existirem */}
                 {client && (
                     <div>
+
+                        {/* Componente Descriptions do Ant Design para exibir detalhes do cliente */}
                         <Descriptions title={client.Name}>
-                            <Descriptions.Item label="Email">{client.Email}</Descriptions.Item>
+
+                            <Descriptions.Item label="Email">
+                                {client.Email}
+                            </Descriptions.Item>
+
+                            {/* Renderiza os telefones do cliente se existirem */}
                             {client.Phones && client.Phones.length > 0 && (
                                 <Descriptions.Item label="Telefones">
                                     {client.Phones.map(phone => (
@@ -78,16 +100,18 @@ const ClientDetails: React.FC = () => {
                                     ))}
                                 </Descriptions.Item>
                             )}
-                            {/* Adicione mais detalhes conforme necessário */}
                         </Descriptions>
+
+                        {/* Componente Space do Ant Design para espaçamento adequado entre os botões */}
                         <Space>
-                        <ClientDelete clientId={client.Id} onDelete={() => navigate('/clients')} children={undefined} />
-                        <Link to={`/clients/${clientId}/edit`}>
-                            <Button type="primary">Editar cliente</Button>
-                        </Link>
-                        <Button type="default" onClick={handleCancel} >
-                            Voltar
-                        </Button>
+                            {/* Botão de excluir baseado no componente, que é executado e depois redireciona para tela de clientes */}
+                            <ClientDelete clientId={client.Id} onDelete={() => navigate('/clients')} children={undefined} />
+
+                            {/* Botão de editar redireciona para a página de edição */}
+                            <Link to={`/clients/${clientId}/edit`}>
+                                <Button type="primary">Editar cliente</Button>
+                            </Link>
+
                         </Space>
                     </div>
                 )}

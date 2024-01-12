@@ -1,11 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { createRoot } from "react-dom/client";
-import { BrowserRouter as Router } from "react-router-dom";
 import App from './App';
 import "antd/dist/reset.css";
-import './theme.less';
-import './index.css';
 import { AuthProvider } from './contexts/AuthContext';
 
 const rootElement = document.getElementById('root');
@@ -13,13 +9,9 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
     <React.StrictMode>
-      <>
-      <>
         <AuthProvider>
           <App />
         </AuthProvider>
-      </>
-      </>
     </React.StrictMode>
   );
 } else {

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 
 
 const DarkModeToggle = () => {
-    // const { isDarkMode, toggleDarkMode } = useDarkMode();
     const { defaultAlgorithm, darkAlgorithm } = theme;
     const [isDarkMode, setIsDarkMode] = useState(false);
 
