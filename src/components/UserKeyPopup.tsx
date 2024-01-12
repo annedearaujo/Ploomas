@@ -3,13 +3,7 @@ import Cookies from 'js-cookie';
 import { Button, Input, Modal, Tooltip, message } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
 
-interface UserKeyPopupProps {
-    onSave: (userKey: string) => void;
-    visible: boolean;
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const UserKeyPopup: React.FC<{ onSave: (userKey: string) => void }> = ({ onSave }) => {
+const UserKeyPopup: React.FC = () => {
     // Estado para controlar a abertura e fechamento do modal
     const [open, setOpen] = useState(false);
     // Estado para armazenar a user-key

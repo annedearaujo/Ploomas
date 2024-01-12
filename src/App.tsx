@@ -82,6 +82,7 @@ const App: React.FC = () => {
 
           {/* Componente de pop-up da chave do usuário */}
           <UserKeyPopup />
+          
 
           {/* Interruptor para o modo escuro */}
           <Switch
