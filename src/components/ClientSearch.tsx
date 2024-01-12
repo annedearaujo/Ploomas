@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Input, Button, List } from 'antd';
+import { Input, Button, List, notification } from 'antd';
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
@@ -32,12 +32,32 @@ const ClientSearch: React.FC = () => {
             if (response.ok) {
                 // Se a solicitação for bem-sucedida, extrai os dados dos clientes e atualiza o estado
                 const data = await response.json();
-                setSearchResults(data.value);
+                if (data.value.length === 0) {
+                    notification.info({
+                        message: 'Nenhum resultado encontrado!',
+                        duration: 3,
+                    });
+                } else {
+                    notification.success({
+                        message: 'Busca realizada com sucesso!',
+                        duration: 3,
+                    });
+                    setSearchResults(data.value);
+                }
             } else {
+                notification.error({
+                    message: 'Erro na busca de clientes!',
+                    duration: 3,
+                });
                 // Se houver um erro na busca de clientes, registra no console
                 console.error('Erro ao buscar clientes');
             }
         } catch (error) {
+            notification.error({
+                message: 'Erro na requisição à API!',
+                description: 'Tente novamente mais tarde',
+                duration: 3,
+            });
             // Trata erros na requisição à API
             console.error('Erro na requisição à API:', error);
         }

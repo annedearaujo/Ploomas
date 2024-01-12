@@ -1,98 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { Button, Input, message, Card } from 'antd';
+import { Button, Input, Card, notification } from 'antd';
 import '../styles/styles.css';
-import UserKeyPopup from '../components/UserKeyPopup';
+import { useNavigate } from 'react-router-dom';
+
 
 const { Meta } = Card;
 
 const AuthenticationPage: React.FC = () => {
     // Estado para armazenar a user-key
     const [userKey, setUserKey] = useState<string>('');
-    // Estado para indicar se a autenticação está sendo verificada
-    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-    const [modalVisible, setOpen] = useState(false);
+    console.log('Initial User Key:', userKey);
 
+    // Função para verificar a autenticação ao carregar a página
     useEffect(() => {
-        // Função assíncrona para verificar a autenticação ao carregar o componente
-        const checkAuthentication = async () => {
-            // Obtenha a user-key armazenada nos cookies
-            const storedUserKey = Cookies.get('user-key');
-            if (storedUserKey) {
-                // Se a user-key existir, atualize o estado
-                setUserKey(storedUserKey);
+        const storedUserKey = Cookies.get('user-key');
 
-                try {
-                    // Verifique a autenticação usando a user-key
-                    const response = await fetch('https://public-api2.ploomes.com/Self/', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'User-Key': storedUserKey,
-                        },
-                    });
+        if (storedUserKey && storedUserKey.trim() !== '') {
+            authenticateUser(storedUserKey);
+        }
+    }, []);
 
-                    if (response.ok) {
-                        // Se a autenticação for bem-sucedida, atualize o estado de carregamento para indicar que a verificação foi concluída
-                        setLoading(false);
-                    } else {
-                        // Se a autenticação falhar, exiba uma mensagem de erro
-                        message.error('Falha na autenticação. Por favor, insira uma User Key válida.');
-                        // Mantenha a tela de autenticação
-                        setLoading(false);
-                    }
-                } catch (error) {
-                    // Exiba uma mensagem de erro em caso de falha na conexão com a API
-                    console.error('Erro ao conectar com a API do Ploomes:', error);
-                    message.error('Erro ao conectar com a API do Ploomes. Tente novamente mais tarde.');
-                    // Mantenha a tela de autenticação
-                    setLoading(false);
-                }
+    const authenticateUser = async (key: string) => {
+        try {
+            // Enviar a requisição para autenticar a chave do usuário
+            const response = await fetch('https://public-api2.ploomes.com/Self/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User-Key': key,
+                },
+            });
+
+            if (response.ok) {
+                // Autenticação bem-sucedida
+                // Salvar a chave nos cookies
+                Cookies.set('user-key', key, { expires: 1 }); // Cookie válido por 1 dia
+
+                notification.success({
+                    message: 'Autenticação bem-sucedida!',
+                });
+
+                console.log('Autenticado pela authenticationpage')
+
+                // Redirecionar para a página inicial
+                navigate('/');
             } else {
-                // Se não houver user-key nos cookies, indique que a verificação foi concluída
-                setLoading(false);
+                // Autenticação falhou
+                notification.error({
+                    message: 'Erro na autenticação. Tente novamente.',
+                });
             }
-        };
+        } catch (error) {
+            console.error('Erro na autenticação:', error);
+        }
+    };
 
-        // Chame a função de verificação ao montar o componente
-        checkAuthentication();
-    }, []); // O array vazio assegura que useEffect seja chamado apenas uma vez, equivalente a componentDidMount
+    const handleAuthentication = () => {
+        authenticateUser(userKey);
+    };
 
     // Manipulador de evento para alterações na user-key
     const handleUserKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUserKey(event.target.value);
     };
 
-    // Manipulador de evento para salvar a user-key
-    const handleSaveUserKey = () => {
-        if (userKey.trim() === '') {
-            // Verifique se a user-key não está vazia
-            message.warning('Por favor, insira uma User Key para prosseguir.');
-            return;
-        }
-
-        // Salvar a user-key nos cookies
-        Cookies.set('user-key', userKey, { expires: 1 }); // Cookie válido por 1 dia
-        // Indique que a verificação foi concluída
-        setLoading(false);
-        message.success('User Key salva com sucesso!');
-    };
-
-    // Renderize a tela de carregamento enquanto a autenticação estiver sendo verificada
-    if (loading) {
-        return <div>Verificando autenticação...</div>;
-    }
-
     // Renderize a tela de autenticação normalmente
     return (
         <Card title="Autenticação">
             <div>
+                <p>Sua autenticação ainda não foi realizada ou expirou, por favor insira sua user key para continuar.</p>
                 <label>
-                    User Key:
+                    Insira sua user key:
                     <Input value={userKey} onChange={handleUserKeyChange} />
                 </label>
-                <Button onClick={handleSaveUserKey}>Salvar UK</Button>
+                <Button onClick={handleAuthentication}>Salvar</Button>
             </div>
         </Card>
     );

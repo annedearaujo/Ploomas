@@ -1,6 +1,6 @@
 // Importações do React e bibliotecas externas
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 // Importações do Ant Design
@@ -15,6 +15,7 @@ import ClientList from './pages/ClientList';
 import ClientDetails from './pages/ClientDetails';
 import ClientEdit from './pages/ClientEdit';
 import ClientCreate from './pages/ClientCreate';
+import { UserKeyProvider } from './contexts/UserKeyContext';
 
 // Importações de estilos globais
 import './styles/styles.css';
@@ -23,12 +24,12 @@ import './theme.less';
 
 const App: React.FC = () => {
   // Lógica para verificar se há uma chave de usuário nos cookies
-  const userKey = Cookies.get('user-key');
+  const userKey = Cookies.get('userKey');
   const { defaultAlgorithm, darkAlgorithm } = theme;
   const [isDarkMode, setIsDarkMode] = useState(false);
+  // Estado para armazenar o status da autenticação
+  const navigate = useNavigate();
 
-
-  
   // Efeito para exibir notificação de redirecionamento
   useEffect(() => {
     handleRedirectionNotification();
@@ -54,35 +55,30 @@ const App: React.FC = () => {
     setIsDarkMode(checked);
   };
 
-  // Renderizar a tela de autenticação se a chave do usuário não estiver presente nos cookies
-  const renderAuthenticationPage = () => (
-    <Router>
-      <Routes>
-        <Route path="/authentication" element={<AuthenticationPage />} />
-        <Route path="*" element={<Navigate to="/authentication" />} />
-      </Routes>
-    </Router>
-  );
+  useEffect(() => {
+    if (!userKey) {
+      navigate('/authentication');
+    }
+  }, [userKey]);
 
   // Renderizar o conteúdo principal do aplicativo se a chave do usuário estiver presente
-  const renderAppContent = () => (
+  return (
     <ConfigProvider theme={{ algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm }}>
-      <Router>
+      <UserKeyProvider>
         <div>
-          {/* Componente de resumo */}
-          <Summary />
 
-          {/* Rotas para páginas do cliente */}
+          {/* Rotas para páginas do cliente e authenticação */}
           <Routes>
+            <Route path="/" element={<Summary />} />
             <Route path="/clients" element={<ClientList />} />
             <Route path="/clients/:clientId" element={<ClientDetails />} />
             <Route path="/clients/:clientId/edit" element={<ClientEdit children={undefined} />} />
             <Route path="/clients/create" element={<ClientCreate />} />
+            <Route path="/authentication" element={<AuthenticationPage />} />
           </Routes>
 
           {/* Componente de pop-up da chave do usuário */}
           <UserKeyPopup />
-          
 
           {/* Interruptor para o modo escuro */}
           <Switch
@@ -99,12 +95,9 @@ const App: React.FC = () => {
             }}
           />
         </div>
-      </Router>
+      </UserKeyProvider>
     </ConfigProvider>
   );
-
-  // Retornar a tela de autenticação ou o conteúdo principal com base na presença da chave do usuário
-  return !userKey ? renderAuthenticationPage() : renderAppContent();
 };
 
 export default App;

@@ -3,15 +3,16 @@ import { createRoot } from "react-dom/client";
 import App from './App';
 import "antd/dist/reset.css";
 import { AuthProvider } from './contexts/AuthContext';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 const rootElement = document.getElementById('root');
 
 if (rootElement) {
   createRoot(rootElement).render(
     <React.StrictMode>
-        <AuthProvider>
+        <Router>
           <App />
-        </AuthProvider>
+        </Router>
     </React.StrictMode>
   );
 } else {

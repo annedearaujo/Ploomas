@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, Row, Col } from 'antd';
+import { Card, Row } from 'antd';
 import Cookies from 'js-cookie';
 import '../styles/styles.css';
 import UserKeyPopup from './UserKeyPopup';
-import Icon, { BulbOutlined, EditOutlined, FileSearchOutlined, HomeOutlined, MailOutlined, SearchOutlined, UnorderedListOutlined, UserAddOutlined } from '@ant-design/icons';
+import { BulbOutlined, EditOutlined, FileSearchOutlined, SearchOutlined, UnorderedListOutlined, UserAddOutlined } from '@ant-design/icons';
 
 const { Meta } = Card;
 
@@ -32,7 +32,7 @@ const Summary: React.FC = () => {
                         </ul>
 
                         <p>
-                            Para começar, por favor, faça a autenticação usando sua "user-key".
+                            Clique no botão abaixo para mudar sua chave de autenticação.
                         </p>
                         <UserKeyPopup />
                     </Card>

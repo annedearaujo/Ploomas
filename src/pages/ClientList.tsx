@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { List, Button, Row, Pagination, Input, Col, Modal, Card, Tooltip, notification } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import { List, Button, Row, Pagination, Input, Col, Modal, Card, Tooltip, notification, Spin } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import Cookies from 'js-cookie';
 import '../styles/styles.css';
@@ -16,6 +16,10 @@ const ClientList: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     // Estado para controlar a visibilidade do campo de busca
     const [isSearchVisible, setIsSearchVisible] = useState(false);
+    // Estado para controlar o carregamento da página
+    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
 
     const itemsPerPage = 10;
     const totalClients = 50; // Número total de clientes aqui
@@ -23,6 +27,7 @@ const ClientList: React.FC = () => {
     // Função para buscar os clientes da API
     const fetchClients = async () => {
         try {
+            setLoading(true);
             // Constrói a url da requisição geral de clientes com paginação
             let apiUrl = `https://public-api2.ploomes.com/Contacts?$top=${itemsPerPage}&$skip=${(pageNumber - 1) * itemsPerPage}`;
 
@@ -51,6 +56,8 @@ const ClientList: React.FC = () => {
         } catch (error) {
             // Trata erros na requisição à API
             console.error('Erro na requisição à API:', error);
+        } finally {
+            setLoading(false); // Desativando o indicador de carregamento, independentemente do resultado
         }
     };
 
@@ -79,12 +86,12 @@ const ClientList: React.FC = () => {
         try {
             await fetchClients();
             notification.success({
-                message: 'Busca realizada com sucesso',
+                message: 'Busca realizada com sucesso!',
                 duration: 3, // Tempo em segundos que a notificação será exibida
             });
         } catch (error) {
             notification.error({
-                message: 'Erro na busca de clientes',
+                message: 'Erro na busca de clientes!',
                 duration: 3,
             });
         }
@@ -96,7 +103,12 @@ const ClientList: React.FC = () => {
         setSearchTerm(''); // Limpar o termo de busca ao fechar o campo de pesquisa
     };
 
-    
+
+    // Função para lidar com o cancelamento da visualização
+    const handleReturn = () => {
+        // Redireciona de volta para a página de clientes
+        navigate(`/`);
+    };
 
     // Função para exibir o modal de confirmação ao clicar no ícone de deletar um cliente
     const showDeleteModal = (clientId: number) => {
@@ -119,15 +131,29 @@ const ClientList: React.FC = () => {
                     });
 
                     if (response.ok) {
+                        notification.success({
+                            message: 'Cliente deletado com sucesso!',
+                            duration: 3, // Tempo em segundos que a notificação será exibida
+                        });
                         // Atualize a lista após a exclusão
                         fetchClients();
                     } else {
                         // Se houver um erro na exclusão do cliente, registra no console
                         console.error('Erro ao excluir cliente');
+                        notification.error({
+                            message: 'Erro ao deletar o cliente!',
+                            description: 'Tente novamente mais tarde.',
+                            duration: 3,
+                        });
                     }
                 } catch (error) {
                     // Trata erros na requisição à API
                     console.error('Erro na requisição à API:', error);
+                    notification.error({
+                        message: 'Erro na conexão com a API!',
+                        description: 'Verifique sua conexão com a internet e tente novamente.',
+                        duration: 5,
+                    });
                 }
             },
             onCancel: () => {
@@ -139,6 +165,12 @@ const ClientList: React.FC = () => {
 
     return (
         <div className="container">
+
+            {/* Botão de voltar redireciona para a tela inicial */}
+            <Button type="default" onClick={handleReturn} >
+                Voltar
+            </Button>
+
             <Card title="Lista de clientes">
                 {/* Row com gutter para posicionar os botões e o campo de busca */}
                 <Row >
@@ -178,30 +210,32 @@ const ClientList: React.FC = () => {
                 </Row>
 
                 {/* Lista de clientes */}
-                <List
-                    className="custom-list"
-                    dataSource={clients}
-                    renderItem={(client: any) => (
-                        <List.Item className="custom-list-item" style={{ padding: '8px 0', fontSize: '16px', width: '100%' }}>
+                <Spin spinning={loading}>
+                    <List
+                        className="custom-list"
+                        dataSource={clients}
+                        renderItem={(client: any) => (
+                            <List.Item className="custom-list-item" style={{ padding: '8px 0', fontSize: '16px', width: '100%' }}>
 
-                            {/* Link para a página de detalhes do cliente */}
-                            <Link to={`/clients/${client.Id}`}>{client.Name}</Link>
+                                {/* Link para a página de detalhes do cliente */}
+                                <Link to={`/clients/${client.Id}`}>{client.Name}</Link>
 
-                            {/* Ícones de editar e deletar cliente */}
-                            <span style={{ marginLeft: '8px' }}>
-                                <Link to={`/clients/${client.Id}/edit`}>
-                                    <Tooltip title="Editar cliente">
-                                        <EditOutlined style={{ marginRight: '8px' }} />
+                                {/* Ícones de editar e deletar cliente */}
+                                <span style={{ marginLeft: '8px' }}>
+                                    <Link to={`/clients/${client.Id}/edit`}>
+                                        <Tooltip title="Editar cliente">
+                                            <EditOutlined style={{ marginRight: '8px' }} />
+                                        </Tooltip>
+                                    </Link>
+                                    <Tooltip title="Deletar cliente">
+                                        <DeleteOutlined onClick={() => showDeleteModal(client.Id)} style={{ color: 'red' }} />
                                     </Tooltip>
-                                </Link>
-                                <Tooltip title="Deletar cliente">
-                                    <DeleteOutlined onClick={() => showDeleteModal(client.Id)} style={{ color: 'red' }} />
-                                </Tooltip>
-                            </span>
+                                </span>
 
-                        </List.Item>
-                    )}
-                />
+                            </List.Item>
+                        )}
+                    />
+                </Spin>
 
                 {/* Paginação */}
                 <Row justify="center">

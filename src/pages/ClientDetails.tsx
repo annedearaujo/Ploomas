@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Descriptions, Button, Card, Space } from 'antd';
+import { Descriptions, Button, Card, Space, notification } from 'antd';
 import Cookies from 'js-cookie';
 import ClientDelete from '../components/ClientDelete';
 
@@ -53,10 +53,19 @@ const ClientDetails: React.FC = () => {
                     // Atualiza o estado com os detalhes do cliente
                     setClient(selectedClient);
                 } else {
+                    notification.error({
+                        message: 'Erro na busca de clientes!',
+                        duration: 3,
+                    });
                     // Se houver um erro na busca dos detalhes do cliente, registra no console
                     console.error('Erro ao buscar detalhes do cliente');
                 }
             } catch (error) {
+                notification.error({
+                    message: 'Erro na requisição à API!',
+                    description: 'Tente novamente mais tarde.',
+                    duration: 3,
+                });
                 // Trata erros na requisição à API
                 console.error('Erro na requisição à API:', error);
             }
@@ -67,7 +76,7 @@ const ClientDetails: React.FC = () => {
     }, [clientId]);
 
     // Função para lidar com o cancelamento da visualização
-    const handleCancel = () => {
+    const handleReturn = () => {
         // Redireciona de volta para a página de clientes
         navigate(`/clients/`);
     };
@@ -75,7 +84,7 @@ const ClientDetails: React.FC = () => {
     return (
         <div className="container">
             {/* Botão de voltar redireciona para a tela de clientes */}
-            <Button type="default" onClick={handleCancel} >
+            <Button type="default" onClick={handleReturn} >
                 Voltar
             </Button>
             <Card title="Detalhes do cliente">

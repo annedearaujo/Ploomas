@@ -47,6 +47,11 @@ const ClientDelete: React.FC<ClientDeleteProps> = ({ clientId, onDelete, childre
                 console.error('Erro ao excluir cliente');
             }
         } catch (error) {
+            notification.error({
+                message: 'Erro na requisição à API!',
+                description: 'Verifique sua conexão com a internet e tente novamente.',
+                duration: 3,
+            });
             // Trata erros na requisição à API
             console.error('Erro na requisição à API:', error);
         }

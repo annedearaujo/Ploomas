@@ -1,5 +1,5 @@
-import React from 'react';
-import { Form, Input, Button, Card, Space, Modal, notification } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input, Button, Card, Space, notification, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import '../styles/styles.css';
@@ -7,12 +7,16 @@ import '../styles/styles.css';
 const { Meta } = Card;
 
 const ClientCreate: React.FC = () => {
+
+    // Estado para controlar o carregamento da página
+    const [loading, setLoading] = useState(false);
     // Hook para navegação programática
     const navigate = useNavigate();
 
     // Função para lidar com o envio do formulário
     const handleFormSubmit = async (values: any) => {
         try {
+            setLoading(true);
             // Envia uma solicitação POST para criar um novo cliente
             const response = await fetch('https://public-api2.ploomes.com/Contacts', {
                 method: 'POST',
@@ -37,17 +41,28 @@ const ClientCreate: React.FC = () => {
                 });
                 navigate('/clients');
             } else {
-                // Se houver um erro na criação do cliente, exibe uma notificação e registra no console
+                // Se houver um erro na criação do cliente, tenta obter informações adicionais do corpo da resposta
+                const errorData = await response.json();
+                // Exibe uma notificação para o usuário
                 notification.error({
                     message: 'Erro ao criar o cliente!',
-                    description: 'Tente novamente mais tarde.',
+                    description: errorData?.error?.message || 'Tente novamente mais tarde.',
                     duration: 3,
                 });
+                // Registra o erro no console
                 console.error('Erro ao criar novo cliente');
             }
         } catch (error) {
+            // Exibe uma notificação para o usuário
+            notification.error({
+                message: 'Erro na requisição à API!',
+                description: 'Verifique sua conexão com a internet e tente novamente.',
+                duration: 3,
+            });
             // Trata erros na requisição à API
             console.error('Erro na requisição à API:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -61,31 +76,34 @@ const ClientCreate: React.FC = () => {
         <div className="container">
             <Card title="Criar cliente">
 
-                <Form onFinish={handleFormSubmit}>
-                    {/* Formulário de criação do cliente */}
-                    <Form.Item label="Nome" name="name" rules={[{ required: true, message: 'Por favor, insira o nome' }]}>
-                        <Input placeholder="Digite o nome do cliente" />
-                    </Form.Item>
-                    <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Por favor, insira o email' }]}>
-                        <Input placeholder="Digite o email do cliente" />
-                    </Form.Item>
-                    <Form.Item label="Telefone" name="phone">
-                        <Input placeholder="Digite o telefone do cliente" />
-                    </Form.Item>
+                <Spin spinning={loading}>
 
-                    <Space>
-                        <>
-                            {/* Botões de ação */}
-                            <Button type="default" onClick={handleCancel} style={{ marginLeft: '8px' }} danger>
-                                Cancelar
-                            </Button>
-                            <Button type="primary" htmlType="submit">
-                                Criar
-                            </Button>
-                        </>
-                    </Space>
-                </Form>
+                    <Form onFinish={handleFormSubmit}>
+                        {/* Formulário de criação do cliente */}
+                        <Form.Item label="Nome" name="name" rules={[{ required: true, message: 'Por favor, insira o nome' }]} >
+                            <Input placeholder="Digite o nome do cliente" />
+                        </Form.Item>
+                        <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Por favor, insira o email' }]} >
+                            <Input placeholder="Digite o email do cliente" />
+                        </Form.Item>
+                        <Form.Item label="Telefone" name="phone">
+                            <Input placeholder="Digite o telefone do cliente" />
+                        </Form.Item>
 
+                        <Space>
+                            <>
+                                {/* Botões de ação */}
+                                <Button type="default" onClick={handleCancel} style={{ marginLeft: '8px' }} danger>
+                                    Cancelar
+                                </Button>
+                                <Button type="primary" htmlType="submit">
+                                    Criar
+                                </Button>
+                            </>
+                        </Space>
+                    </Form>
+
+                </Spin>
             </Card>
         </div>
     );
