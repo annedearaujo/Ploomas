@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { Button, Input, Card, notification } from 'antd';
+import { Button, Input, Card, notification, Form } from 'antd';
 import '../styles/styles.css';
 import { useNavigate } from 'react-router-dom';
 
-
-const { Meta } = Card;
 
 const AuthenticationPage: React.FC = () => {
     // Estado para armazenar a user-key
     const [userKey, setUserKey] = useState<string>('');
     const navigate = useNavigate();
-
-    console.log('Initial User Key:', userKey);
 
     // Função para verificar a autenticação ao carregar a página
     useEffect(() => {
@@ -42,9 +38,6 @@ const AuthenticationPage: React.FC = () => {
                 notification.success({
                     message: 'Autenticação bem-sucedida!',
                 });
-
-                console.log('Autenticado pela authenticationpage')
-
                 // Redirecionar para a página inicial
                 navigate('/');
             } else {
@@ -59,6 +52,13 @@ const AuthenticationPage: React.FC = () => {
     };
 
     const handleAuthentication = () => {
+        if (!userKey.trim()) {
+            notification.error({
+                message: 'A chave do usuário não pode estar vazia. Insira uma chave válida.',
+            });
+            return;
+        }
+
         authenticateUser(userKey);
     };
 
@@ -69,16 +69,24 @@ const AuthenticationPage: React.FC = () => {
 
     // Renderize a tela de autenticação normalmente
     return (
-        <Card title="Autenticação">
-            <div>
-                <p>Sua autenticação ainda não foi realizada ou expirou, por favor insira sua user key para continuar.</p>
-                <label>
-                    Insira sua user key:
-                    <Input value={userKey} onChange={handleUserKeyChange} />
-                </label>
-                <Button onClick={handleAuthentication}>Salvar</Button>
-            </div>
-        </Card>
+        <div className="container"  >
+            <Card title="Autenticação">
+                    <p>Sua autenticação ainda não foi realizada ou expirou!
+                        Por favor, insira sua user key para continuar.</p>
+                    <Form onFinish={handleAuthentication}>
+                        <Form.Item
+                            label="Chave de usuário"
+                            name="userKey"
+                            rules={[
+                                { required: true, message: 'A chave do usuário é obrigatória.' },
+                            ]}
+                        >
+                            <Input value={userKey} onChange={handleUserKeyChange} />
+                        </Form.Item>
+                        <Button type="primary" htmlType="submit">Salvar</Button>
+                    </Form>
+            </Card>
+        </div>
     );
 };
 

@@ -4,8 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import '../styles/styles.css';
 
-const { Meta } = Card;
-
 const ClientCreate: React.FC = () => {
 
     // Estado para controlar o carregamento da página
@@ -78,7 +76,7 @@ const ClientCreate: React.FC = () => {
 
                 <Spin spinning={loading}>
 
-                    <Form onFinish={handleFormSubmit}>
+                    <Form onFinish={handleFormSubmit} labelAlign="left" >
                         {/* Formulário de criação do cliente */}
                         <Form.Item label="Nome" name="name" rules={[{ required: true, message: 'Por favor, insira o nome' }]} >
                             <Input placeholder="Digite o nome do cliente" />
@@ -93,7 +91,7 @@ const ClientCreate: React.FC = () => {
                         <Space>
                             <>
                                 {/* Botões de ação */}
-                                <Button type="default" onClick={handleCancel} style={{ marginLeft: '8px' }} danger>
+                                <Button type="default" onClick={handleCancel} danger>
                                     Cancelar
                                 </Button>
                                 <Button type="primary" htmlType="submit">

@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/arauj/Documents/GitHub/ploomas/src/components",
-      "program": "c:/Users/arauj/Documents/GitHub/ploomas/src/components/build/Debug/outDebug",
+      "cwd": "c:/Users/arauj/Documents/GitHub/ploomas/src",
+      "program": "c:/Users/arauj/Documents/GitHub/ploomas/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

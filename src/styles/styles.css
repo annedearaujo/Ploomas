@@ -58,6 +58,18 @@ body {
     margin: 0 auto;
 }
 
+/* #TODO: verificar */
+.form-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+html.dark-mode {
+    background-color: #001529;
+    color: #fff;
+}
+
 /* Media query para telas menores que 600 pixels de largura */
 @media screen and (max-width: 600px) {
     body {

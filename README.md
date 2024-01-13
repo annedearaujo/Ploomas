@@ -82,13 +82,4 @@ A aplicação inclui testes unitários para garantir a estabilidade do código. 
 Este projeto está licenciado sob a Licença Apache 2.0.
 
 ## Estrutura
-src/
-├── components/
-│   ├── UserKeyPopup.tsx
-│   └── Summary.tsx
-├── contexts/
-│   └── AuthContext.tsx
-├── pages/
-│   └── AuthenticationPage.tsx
-├── App.tsx
-└── ...
+

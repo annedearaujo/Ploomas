@@ -4,8 +4,6 @@ import { Form, Input, Button, Row, Col, Card, Tooltip, notification, Spin } from
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import Cookies from 'js-cookie';
 
-const { Meta } = Card;
-
 // Interface para os detalhes do cliente
 interface ClientEditProps {
     children: React.ReactNode;

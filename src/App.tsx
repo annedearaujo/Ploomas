@@ -16,6 +16,7 @@ import ClientDetails from './pages/ClientDetails';
 import ClientEdit from './pages/ClientEdit';
 import ClientCreate from './pages/ClientCreate';
 import { UserKeyProvider } from './contexts/UserKeyContext';
+import DarkModeSwitch from './components/DarkModeSwitch';
 
 // Importações de estilos globais
 import './styles/styles.css';
@@ -63,40 +64,39 @@ const App: React.FC = () => {
 
   // Renderizar o conteúdo principal do aplicativo se a chave do usuário estiver presente
   return (
-    <ConfigProvider theme={{ algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm }}>
-      <UserKeyProvider>
-        <div>
 
-          {/* Rotas para páginas do cliente e authenticação */}
-          <Routes>
-            <Route path="/" element={<Summary />} />
-            <Route path="/clients" element={<ClientList />} />
-            <Route path="/clients/:clientId" element={<ClientDetails />} />
-            <Route path="/clients/:clientId/edit" element={<ClientEdit children={undefined} />} />
-            <Route path="/clients/create" element={<ClientCreate />} />
-            <Route path="/authentication" element={<AuthenticationPage />} />
-          </Routes>
+    // #TODO: esilo inline, verificar se não tem outro jeito
+    <div style={{
+      backgroundColor: isDarkMode ? '#333' : '#fff',
+      minHeight: '100vh',
+      transition: 'background-color 0.3s ease',
+    }} >
+      <ConfigProvider theme={{ algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm }} >
+        <UserKeyProvider>
+          <div>
 
-          {/* Componente de pop-up da chave do usuário */}
-          <UserKeyPopup />
+            {/* Rotas para páginas do cliente e authenticação */}
+            <Routes>
+              <Route path="/" element={<Summary />} />
+              <Route path="/clients" element={<ClientList />} />
+              <Route path="/clients/:clientId" element={<ClientDetails />} />
+              <Route path="/clients/:clientId/edit" element={<ClientEdit children={undefined} />} />
+              <Route path="/clients/create" element={<ClientCreate />} />
+              <Route path="/authentication" element={<AuthenticationPage />} />
+            </Routes>
 
-          {/* Interruptor para o modo escuro */}
-          <Switch
-            checked={isDarkMode}
-            onChange={handleSwitchChange}
-            checkedChildren={<BulbFilled style={{ color: '#000' }} />}
-            unCheckedChildren={<BulbFilled style={{ color: '#f3ea62' }} />}
-            style={{
-              position: 'absolute',
-              top: 10, // Ajustar
-              left: 10, // Ajustar
-              backgroundColor: isDarkMode ? '#333' : '#f0f0f0',
-              border: isDarkMode ? '1px solid #fff' : '1px solid #d9d9d9',
-            }}
-          />
-        </div>
-      </UserKeyProvider>
-    </ConfigProvider>
+            {/* Componente de pop-up da chave do usuário */}
+            <UserKeyPopup />
+
+            {/* Interruptor para o modo escuro */}
+            <DarkModeSwitch
+              isDarkMode={isDarkMode}
+              onSwitchChange={handleSwitchChange}
+            />
+          </div>
+        </UserKeyProvider>
+      </ConfigProvider>
+    </div>
   );
 };
 

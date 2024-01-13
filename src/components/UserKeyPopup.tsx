@@ -1,7 +1,7 @@
 import React from 'react';
 import Cookies from 'js-cookie';
 import { Button, Input, Modal, Tooltip, message } from 'antd';
-import { SyncOutlined } from '@ant-design/icons';
+import { KeyOutlined } from '@ant-design/icons';
 import { useUserKey } from '../contexts/UserKeyContext';
 
 const UserKeyPopup: React.FC = () => {
@@ -32,7 +32,7 @@ const UserKeyPopup: React.FC = () => {
     return (
         <>
             <Tooltip title="Clique para editar a user-key">
-                <Button icon={<SyncOutlined />} onClick={handleButtonClick}>
+                <Button icon={<KeyOutlined />} onClick={handleButtonClick}>
                     User-Key
                 </Button>
             </Tooltip>

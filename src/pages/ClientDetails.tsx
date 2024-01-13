@@ -4,8 +4,6 @@ import { Descriptions, Button, Card, Space, notification } from 'antd';
 import Cookies from 'js-cookie';
 import ClientDelete from '../components/ClientDelete';
 
-const { Meta } = Card;
-
 // Interface para tipagem do telefone
 interface Phone {
     Id: number;

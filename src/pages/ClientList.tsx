@@ -5,8 +5,6 @@ import { EditOutlined, DeleteOutlined, SearchOutlined, PlusOutlined } from '@ant
 import Cookies from 'js-cookie';
 import '../styles/styles.css';
 
-const { Meta } = Card;
-
 const ClientList: React.FC = () => {
     // Estado para armazenar a lista de clientes
     const [clients, setClients] = useState([]);
@@ -174,7 +172,7 @@ const ClientList: React.FC = () => {
             <Card title="Lista de clientes">
                 {/* Row com gutter para posicionar os botões e o campo de busca */}
                 <Row >
-
+                    
                     <Col flex="auto">
                         {/* Link para a página de criação de cliente com botão de adicionar */}
                         <Link to="/clients/create">
