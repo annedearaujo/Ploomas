@@ -44,7 +44,7 @@ const ClientCreate: React.FC = () => {
                 // Exibe uma notificação para o usuário
                 notification.error({
                     message: 'Erro ao criar o cliente!',
-                    description: errorData?.error?.message || 'Tente novamente mais tarde.',
+                    description: errorData?.error?.message ?? 'Tente novamente mais tarde.',
                     duration: 3,
                 });
                 // Registra o erro no console

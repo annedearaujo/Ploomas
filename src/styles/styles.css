@@ -45,24 +45,10 @@ body {
     background-color: #1677ff;
 }
 
-/* Estilos para o rodapé */
-.footer-style {
-    text-align: center;
-    color: #fff;
-    background-color: #4096ff;
-}
-
 /* Contêiner principal */
 .container {
     width: 90%;
     margin: 0 auto;
-}
-
-/* #TODO: verificar */
-.form-item {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
 }
 
 html.dark-mode {

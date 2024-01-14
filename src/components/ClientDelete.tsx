@@ -11,12 +11,7 @@ interface ClientDeleteProps {
 
 const ClientDelete: React.FC<ClientDeleteProps> = ({ clientId, onDelete, children }) => {
     // Estado para controlar a abertura e fechamento do modal
-    const [isModalOpen, setIsModalOpen] = useState(false); // isModalOpen não utilizado, investigar por que
-
-    // Função para abrir o modal de confirmação
-    const showModal = () => {
-        setIsModalOpen(true);
-    }; // estado não utilizado, investigar por que
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Função para lidar com a confirmação de exclusão
     const handleOk = async () => {

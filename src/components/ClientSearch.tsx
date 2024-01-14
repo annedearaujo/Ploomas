@@ -3,14 +3,6 @@ import { Input, Button, List, notification } from 'antd';
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
-interface ClientSearchProps {
-    searchTerm: string;
-    onSearchTermChange: (value: string) => void;
-    onSearch: () => void;
-    isSearchVisible: boolean;
-    onToggleSearchVisibility: () => void;
-}
-
 const ClientSearch: React.FC = () => {
     // Estado para armazenar o termo de busca
     const [searchTerm, setSearchTerm] = useState('');

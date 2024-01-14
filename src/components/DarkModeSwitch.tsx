@@ -1,5 +1,5 @@
 // Importações do React e bibliotecas externas
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Switch } from 'antd';
 import { BulbFilled } from '@ant-design/icons';
 

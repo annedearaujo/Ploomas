@@ -5,6 +5,18 @@ import { EditOutlined, DeleteOutlined, SearchOutlined, PlusOutlined } from '@ant
 import Cookies from 'js-cookie';
 import '../styles/styles.css';
 
+// Função utilitária para obter o User Key dos cookies
+const getUserKey = () => Cookies.get('user-key') ?? '';
+
+// Função utilitária para construir URLs de requisições
+const buildApiUrl = (baseURL: string, params = {}) => {
+    const queryParams = new URLSearchParams(params);
+    return `${baseURL}?${queryParams}`;
+};
+
+// Função utilitária para manipulação de cookies
+const getCookieUserKey = () => Cookies.get('user-key') ?? '';
+
 const ClientList: React.FC = () => {
     // Estado para armazenar a lista de clientes
     const [clients, setClients] = useState([]);
@@ -20,26 +32,29 @@ const ClientList: React.FC = () => {
     const navigate = useNavigate();
 
     const itemsPerPage = 10;
-    const totalClients = 50; // Número total de clientes aqui
+    const totalClients = 50; // número estabelecido para não sobrecarregar a API, tendo em vista que é apenas um cenário de teste
 
     // Função para buscar os clientes da API
     const fetchClients = async () => {
         try {
             setLoading(true);
-            // Constrói a url da requisição geral de clientes com paginação
-            let apiUrl = `https://public-api2.ploomes.com/Contacts?$top=${itemsPerPage}&$skip=${(pageNumber - 1) * itemsPerPage}`;
-
-            // Constrói a url da requisição se houver algum termo de busca
-            if (searchTerm) {
-                apiUrl = `https://public-api2.ploomes.com/Contacts?$filter=contains(Name, '${searchTerm}') or contains(Email, '${searchTerm}') or Phones/any(p: contains(p/PhoneNumber, '${searchTerm}'))`;
-            }
+            const apiUrl = buildApiUrl(
+                'https://public-api2.ploomes.com/Contacts',
+                searchTerm
+                    ? {
+                        // Constrói a url da requisição se houver algum termo de busca
+                        $filter: `contains(Name, '${searchTerm}') or contains(Email, '${searchTerm}') or Phones/any(p: contains(p/PhoneNumber, '${searchTerm}'))`,
+                    }
+                    // Constrói a url da requisição geral de clientes com paginação
+                    : { $top: itemsPerPage, $skip: (pageNumber - 1) * itemsPerPage }
+            );
 
             // Realiza uma solicitação GET para obter a lista de clientes
             const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'User-Key': Cookies.get('user-key') ?? '',
+                    'User-Key': getUserKey(),
                 },
             });
 
@@ -48,21 +63,31 @@ const ClientList: React.FC = () => {
                 const data = await response.json();
                 setClients(data.value);
             } else {
-                // Se houver um erro na busca da lista de clientes, registra no console
+                // Se houver um erro na busca da lista de clientes, registra no console e exibe uma notificação
                 console.error('Erro ao buscar lista de clientes');
+                notification.error({
+                    message: 'Erro ao buscar clientes!',
+                    description: 'Tente novamente mais tarde.',
+                    duration: 3,
+                });
             }
         } catch (error) {
-            // Trata erros na requisição à API
             console.error('Erro na requisição à API:', error);
+            notification.error({
+                message: 'Erro na conexão com a API!',
+                description: 'Verifique sua conexão com a internet e tente novamente.',
+                duration: 5,
+            });
         } finally {
-            setLoading(false); // Desativando o indicador de carregamento, independentemente do resultado
+            // Desativando o indicador de carregamento, independentemente do resultado
+            setLoading(false);
         }
     };
 
-    // Efeito para buscar clientes sempre que a página, o termo de busca ou a visibilidade do campo de busca mudarem
+    // Efeito para buscar clientes sempre que a página ou o termo de busca mudar
     useEffect(() => {
         fetchClients();
-    }, [pageNumber, searchTerm, isSearchVisible]);
+    }, [pageNumber, searchTerm]);
 
     // Função para lidar com a mudança de página
     const handlePageChange = (page: number) => {
@@ -74,57 +99,34 @@ const ClientList: React.FC = () => {
         setSearchTerm(e.target.value);
     };
 
-    // Função para lidar com o clique no botão de busca
-    // const handleSearch = () => {
-    //     setPageNumber(1); // Resetar a página ao iniciar uma nova busca
-    //     fetchClients();
-    // };
-    const handleSearch = async () => {
-        setPageNumber(1);
-        try {
-            await fetchClients();
-            notification.success({
-                message: 'Busca realizada com sucesso!',
-                duration: 3, // Tempo em segundos que a notificação será exibida
-            });
-        } catch (error) {
-            notification.error({
-                message: 'Erro na busca de clientes!',
-                duration: 3,
-            });
-        }
-    };
-
     // Função para alternar a visibilidade do campo de busca
     const toggleSearchVisibility = () => {
         setIsSearchVisible(!isSearchVisible);
-        setSearchTerm(''); // Limpar o termo de busca ao fechar o campo de pesquisa
+        // Limpar o termo de busca ao fechar o campo de pesquisa
+        setSearchTerm('');
     };
 
-
-    // Função para lidar com o cancelamento da visualização
+    // Função para lidar com o clique no botão de voltar
     const handleReturn = () => {
-        // Redireciona de volta para a página de clientes
         navigate(`/`);
     };
 
     // Função para exibir o modal de confirmação ao clicar no ícone de deletar um cliente
     const showDeleteModal = (clientId: number) => {
         Modal.confirm({
-            title: 'Confirmar Exclusão',
+            title: 'Confirmar exclusão',
             content: 'Tem certeza de que deseja excluir este cliente?',
             okText: 'Sim',
             okType: 'danger',
             cancelText: 'Cancelar',
             onOk: async () => {
-                // Lógica de exclusão aqui
                 try {
                     // Realiza uma solicitação DELETE para excluir o cliente
                     const response = await fetch(`https://public-api2.ploomes.com/Contacts(${clientId})`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
-                            'User-Key': Cookies.get('user-key') ?? '',
+                            'User-Key': getCookieUserKey(),
                         },
                     });
 
@@ -136,7 +138,7 @@ const ClientList: React.FC = () => {
                         // Atualize a lista após a exclusão
                         fetchClients();
                     } else {
-                        // Se houver um erro na exclusão do cliente, registra no console
+                        // Se houver um erro na exclusão do cliente, registra no console e exibe uma notificação
                         console.error('Erro ao excluir cliente');
                         notification.error({
                             message: 'Erro ao deletar o cliente!',
@@ -154,38 +156,32 @@ const ClientList: React.FC = () => {
                     });
                 }
             },
-            onCancel: () => {
-                // Ação ao cancelar
-            },
+            onCancel: () => { },
         });
     };
 
-
     return (
         <div className="container">
-
             {/* Botão de voltar redireciona para a tela inicial */}
-            <Button type="default" onClick={handleReturn} >
+            <Button type="default" onClick={handleReturn}>
                 Voltar
             </Button>
-
             <Card title="Lista de clientes">
-                {/* Row com gutter para posicionar os botões e o campo de busca */}
-                <Row >
-                    
+                <Row>
                     <Col flex="auto">
+
                         {/* Link para a página de criação de cliente com botão de adicionar */}
                         <Link to="/clients/create">
                             <Tooltip title="Adicionar cliente">
-                                <Button type="primary" icon={<PlusOutlined />}>
-                                </Button>
+                                <Button type="primary" icon={<PlusOutlined />} />
                             </Tooltip>
                         </Link>
                     </Col>
+                    {/* Campo de busca */}
 
-                    {isSearchVisible ? (
-                        <Col >
-                            {/* Campo de busca visível apenas quando isSearchVisible for verdadeiro */}
+                    {/* Campo de busca visível apenas quando isSearchVisible for verdadeiro */}
+                    {isSearchVisible && (
+                        <Col>
                             <Tooltip title="Digite o nome, e-mail ou telefone do cliente">
                                 <Input
                                     placeholder="Digite o nome, e-mail ou telefone do cliente"
@@ -195,15 +191,11 @@ const ClientList: React.FC = () => {
                                 />
                             </Tooltip>
                         </Col>
-                    ) : null}
+                    )}
 
                     {/* Botão de busca com ícone de lupa */}
                     <Tooltip title="Buscar clientes">
-                        <Button
-                            type="primary"
-                            icon={<SearchOutlined />}
-                            onClick={toggleSearchVisibility}
-                        />
+                        <Button type="primary" icon={<SearchOutlined />} onClick={toggleSearchVisibility} />
                     </Tooltip>
                 </Row>
 
@@ -229,7 +221,6 @@ const ClientList: React.FC = () => {
                                         <DeleteOutlined onClick={() => showDeleteModal(client.Id)} style={{ color: 'red' }} />
                                     </Tooltip>
                                 </span>
-
                             </List.Item>
                         )}
                     />
@@ -246,7 +237,7 @@ const ClientList: React.FC = () => {
                     />
                 </Row>
             </Card>
-        </div >
+        </div>
     );
 };
 

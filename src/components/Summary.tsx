@@ -1,12 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, Row, Space } from 'antd';
+import { Card } from 'antd';
 import Cookies from 'js-cookie';
 import '../styles/styles.css';
 import UserKeyPopup from './UserKeyPopup';
 import { BulbOutlined, EditOutlined, FileSearchOutlined, SearchOutlined, UnorderedListOutlined, UserAddOutlined } from '@ant-design/icons';
-
-const { Meta } = Card;
 
 const Summary: React.FC = () => {
     const userKey = Cookies.get('user-key') ?? '';
@@ -17,8 +15,9 @@ const Summary: React.FC = () => {
                 <Card title="Ploomas - Gerenciamento de Clientes" bordered={false} >
                     <>
                         <>
+                            <p>Boas vindas!</p>
                             <p>
-                                Bem-vindo ao Ploomas, sua plataforma eficiente para gerenciar clientes utilizando a API pública do Ploomes.
+                                O Ploomas é a sua plataforma alternativa para gerenciar clientes utilizando a API pública do Ploomes.
                                 Explore as seguintes funcionalidades:
                             </p>
                             <ul>
@@ -61,7 +60,7 @@ const Summary: React.FC = () => {
                                         <BulbOutlined /> Experimente ativar o modo escuro para uma experiência visual diferente.</li>
                                 </ul>
                                 <li>Lembre-se de manter sua chave de autenticação segura. Caso necessário, você pode alterá-la a qualquer momento no botão de "User-Key" disponível no resumo ou canto inferior esquerdo em todas as telas.</li>
-                                <li>Se tiver dúvidas ou precisar de mais informações, consulte a documentação disponível no menu principal.</li>
+                                <li>Se tiver dúvidas ou precisar de mais informações sobre a API, consulte a documentação disponível em <a href='https://developers.ploomes.com/'>https://developers.ploomes.com/</a></li>
                             </ol>
                         </Card>
                     </>

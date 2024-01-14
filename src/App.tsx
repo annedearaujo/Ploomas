@@ -1,11 +1,11 @@
 // Importações do React e bibliotecas externas
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import styled from 'styled-components';
 
 // Importações do Ant Design
-import { notification, ConfigProvider, theme, Switch } from 'antd';
-import { BulbFilled } from '@ant-design/icons';
+import { notification, ConfigProvider, theme, Layout } from 'antd';
 
 // Importações locais de componentes e páginas
 import AuthenticationPage from './pages/AuthenticationPage';
@@ -21,7 +21,19 @@ import DarkModeSwitch from './components/DarkModeSwitch';
 // Importações de estilos globais
 import './styles/styles.css';
 import 'antd/dist/reset.css';
-import './theme.less';
+
+const { Footer } = Layout;
+
+// Tipagem para definir cores do container
+interface AppContainerProps {
+  isDarkMode: boolean;
+}
+
+// Estilizar cores do container
+const AppContainer = styled.div<AppContainerProps>((props) => ({
+  backgroundColor: props.isDarkMode ? '#333' : '#fff',
+  transition: 'background-color 0.3s ease',
+}));
 
 const App: React.FC = () => {
   // Lógica para verificar se há uma chave de usuário nos cookies
@@ -64,14 +76,14 @@ const App: React.FC = () => {
 
   // Renderizar o conteúdo principal do aplicativo se a chave do usuário estiver presente
   return (
-
-    // #TODO: esilo inline, verificar se não tem outro jeito
-    <div style={{
-      backgroundColor: isDarkMode ? '#333' : '#fff',
-      minHeight: '100vh',
-      transition: 'background-color 0.3s ease',
-    }} >
-      <ConfigProvider theme={{ algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm }} >
+    <AppContainer isDarkMode={isDarkMode}>
+      <ConfigProvider theme={{
+        token: {
+          colorPrimary: '#6759c0',
+          colorLink: '#9288DD' ,
+        },
+        algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm,
+      }}>
         <UserKeyProvider>
           <div>
 
@@ -94,9 +106,12 @@ const App: React.FC = () => {
               onSwitchChange={handleSwitchChange}
             />
           </div>
+          <Footer style={{ textAlign: 'center' }}>
+            Anne Araújo © {new Date().getFullYear()}
+          </Footer>
         </UserKeyProvider>
       </ConfigProvider>
-    </div>
+    </AppContainer>
   );
 };
 

@@ -42,6 +42,8 @@ const UserKeyPopup: React.FC = () => {
                 visible={openModal}
                 onOk={handleSaveClick}
                 onCancel={handleCancel}
+                okText='Salvar'
+                cancelText='Cancelar'
                 style={{ right: 0, left: 'auto' }}
             >
                 <Input value={userKey} onChange={(e) => setUserKey(e.target.value)} />
