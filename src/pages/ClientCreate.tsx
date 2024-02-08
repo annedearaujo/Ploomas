@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Card, Space, notification, Spin } from 'antd';
+import { Form, Input, Button, Row, Col, Card, Tooltip, Space, notification, Spin } from 'antd';
+import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import '../styles/styles.css';
 
 const ClientCreate: React.FC = () => {
-
     // Estado para controlar o carregamento da página
     const [loading, setLoading] = useState(false);
     // Hook para navegação programática
@@ -26,7 +26,10 @@ const ClientCreate: React.FC = () => {
                 body: JSON.stringify({
                     Name: values.name,
                     Email: values.email,
-                    Phones: values.phone ? [{ PhoneNumber: values.phone, Type: { Id: 1, Name: 'Default' } }] : [],
+                    Phones: values.phones.map((phone: string) => ({
+                        PhoneNumber: phone,
+                        Type: { Id: 1, Name: 'Default' },
+                    })),
                 }),
             });
 
@@ -73,21 +76,57 @@ const ClientCreate: React.FC = () => {
     return (
         <div className="container">
             <Card title="Criar cliente">
-
                 <Spin spinning={loading}>
-
-                    <Form onFinish={handleFormSubmit} labelAlign="left" >
+                    <Form onFinish={handleFormSubmit} labelAlign="left">
                         {/* Formulário de criação do cliente */}
-                        <Form.Item label="Nome" name="name" rules={[{ required: true, message: 'Por favor, insira o nome' }]} >
+                        <Form.Item label="Nome" name="name" rules={[{ required: true, message: 'Por favor, insira o nome' }]}>
                             <Input placeholder="Digite o nome do cliente" />
                         </Form.Item>
-                        <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Por favor, insira o email' }]} >
+                        <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Por favor, insira o email' }]}>
                             <Input placeholder="Digite o email do cliente" />
                         </Form.Item>
-                        <Form.Item label="Telefone" name="phone">
-                            <Input placeholder="Digite o telefone do cliente" />
-                        </Form.Item>
+                        <Form.List name="phones" initialValue={[{ PhoneNumber: '' }]}>
+                            {(fields, { add, remove }) => (
+                                <>
+                                    {fields.map(field => (
+                                        <Row key={field.key}>
+                                            <Col>
+                                                <Form.Item
+                                                    {...field}
+                                                    label="Telefone"
+                                                    name={[field.name, 'PhoneNumber']}
+                                                    fieldKey={[field.fieldKey ?? '', 'PhoneNumber']}
+                                                    rules={[{ required: true, message: 'Por favor, insira o telefone' }]}
+                                                >
+                                                    <Input placeholder="Digite o telefone do cliente" />
+                                                </Form.Item>
+                                            </Col>
+                                            <Col>
+                                                <Tooltip title="Adicionar outro número de telefone">
+                                                    <Button
+                                                        type="dashed"
+                                                        onClick={() => add()}
+                                                        icon={<PlusOutlined />}
+                                                    />
+                                                </Tooltip>
+                                            </Col>
+                                            <Col>
+                                                {fields.length > 1 && (
+                                                    <Tooltip title="Remover número de telefone">
+                                                        <Button
+                                                            type="dashed"
+                                                            onClick={() => remove(field.name)}
+                                                            icon={<MinusCircleOutlined />}
+                                                        />
+                                                    </Tooltip>
+                                                )}
+                                            </Col>
+                                        </Row>
+                                    ))}
 
+                                </>
+                            )}
+                        </Form.List>
                         <Space>
                             <>
                                 {/* Botões de ação */}
@@ -100,7 +139,6 @@ const ClientCreate: React.FC = () => {
                             </>
                         </Space>
                     </Form>
-
                 </Spin>
             </Card>
         </div>
