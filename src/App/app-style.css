@@ -2,12 +2,11 @@
 
 
 /* Estilos padrão para telas maiores ou iguais a 600 pixels de largura */
-/* body {
+body {
     font-size: 16px;
-    margin: 20px;
     word-wrap: break-word;
     background-color: #EAEAEA;
-} */
+}
 
 /* Layout responsivo */
 .responsive-layout {
